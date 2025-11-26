@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class University extends Model
 {
-    //
+    protected $table = 'universities';
+    protected $fillable = ["name", "description", "address", "phone", "email", "logo", "website", "facebook", "twitter", "instagram", "youtube", "linkedin"];
+
 }

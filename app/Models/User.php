@@ -18,9 +18,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'id', 'name', 'email', 'email_verified_at', 'password', 'remember_token', 'created_at', 'updated_at', 'phone', 'address', 'city', 'state', 'country', 'website', 'facebook', 'twitter', 'instagram', 'youtube', 'linkedin', 'github', 'description', 'profile_image', 'college_id', 'role_id'
     ];
 
     /**
@@ -50,6 +48,17 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class, 'project_likes', 'user_id', 'project_id')
             ->withTimestamps();
+    }
+
+
+    public function college()
+    {
+        return $this->belongsTo(College::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     public function following()
