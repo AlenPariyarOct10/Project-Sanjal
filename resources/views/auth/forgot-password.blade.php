@@ -1,25 +1,73 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+@extends('layouts.guest')
+
+@section('content')
+    <div class="auth-container">
+
+        <!-- Forgot Password Section -->
+        <div class="auth-form-section">
+            <form class="auth-form" id="forgotPasswordForm" method="POST" action="{{ route('password.email') }}">
+                @csrf
+
+                <!-- Logo -->
+                <div class="form-logo">
+                    <div class="logo-icon">N</div>
+                    <div>
+                        <h3 style="margin: 0">{{ config('app.name', 'Laravel') }}</h3>
+                        <p style="margin: 0; font-size: 12px; color: var(--subtext)">Project Sharing Platform</p>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h1 class="form-title">Forgot Password?</h1>
+                <p class="form-subtitle">
+                    Enter your email and we will send you a password reset link.
+                </p>
+
+                <!-- Status Message -->
+                @if (session('status'))
+                    <div class="alert-success">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                <!-- Error Messages -->
+                @if ($errors->any())
+                    <div class="alert-error">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        value="{{ old('email') }}"
+                        required
+                    />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn">Send Password Reset Link</button>
+
+                <!-- Back to Login -->
+                <p style="text-align: center; color: var(--subtext); margin-top: 20px;">
+                    Remember your password?
+                    <a href="{{ route('login') }}" class="form-link">Go back to login</a>
+                </p>
+
+            </form>
+        </div>
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    <script>
+        document.getElementById("forgotPasswordForm").addEventListener("submit", function (e) {
+            // You can add custom JS here if needed
+        });
+    </script>
+@endsection

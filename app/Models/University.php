@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class University extends Model
 {
+    use HasFactory;
     protected $table = 'universities';
     protected $fillable = ["name", "description", "address", "phone", "email", "logo", "website", "facebook", "twitter", "instagram", "youtube", "linkedin"];
 

@@ -1,0 +1,40 @@
+<?php
+
+use App\Http\Controllers\Admin\AlgorithmController;
+use App\Http\Controllers\Admin\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\CollegeController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\UniversityController;
+use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Route;
+
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('auth:admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+        Route::get('/algorithms', [AlgorithmController::class, 'index'])->name('algorithms.index');
+        Route::post('/algorithms', [AlgorithmController::class, 'store'])->name('algorithms.store');
+        Route::POST('/algorithms-data', [AlgorithmController::class, 'getDataForIndex'])->name('algorithms.data');
+
+
+        Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+        Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
+        Route::POST('/projects-data', [ProjectController::class, 'getDataForIndex'])->name('projects.data');
+
+
+
+        Route::get('/colleges', [CollegeController::class, 'index'])->name('colleges.index');
+        Route::get('/colleges/{id}', [ProjectController::class, 'show'])->name('colleges.show');
+
+        Route::get('/universities', [UniversityController::class, 'index'])->name('universities.index');
+        Route::get('/universities/{id}', [UniversityController::class, 'show'])->name('universities.show');
+        Route::get('/universities/{id}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
+        Route::post('/universities/{id}', [UniversityController::class, 'update'])->name('universities.update');
+        Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
+        Route::post('/universities-data', [UniversityController::class, 'data'])->name('universities.data');
+    });
+});
