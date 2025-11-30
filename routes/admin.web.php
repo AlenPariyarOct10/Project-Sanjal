@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\CollegeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,5 +38,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
         Route::post('/universities-data', [UniversityController::class, 'data'])->name('universities.data');
         Route::delete('/universities/{id}', [UniversityController::class, 'softDelete'])->name('universities.destroy');
+
+        Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
+        Route::post('/tags-data', [TagController::class, 'data'])->name('tags.data');
+        Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
+        Route::get('/tags/{id}', [TagController::class, 'show'])->name('tags.show');
+        Route::get('/tags/{id}/edit', [TagController::class, 'edit'])->name('tags.edit');
+        Route::delete('/tags/{id}', [TagController::class, 'softDelete'])->name('tags.destroy');
+        Route::put('/tags/{id}', [TagController::class, 'update'])->name('tags.update');
+
     });
 });
