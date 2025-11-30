@@ -6,7 +6,8 @@
     <title>Admin Dashboard - Nepal IT Project Hub</title>
     @vite(['resources/css/styles.css', 'resources/css/admin.css', 'resources/css/app.css'])
     @yield('css')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="{{asset('css/sweetalert2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/toastify.min.css')}}">
 
 </head>
 <body>
@@ -34,10 +35,8 @@
 </footer>
 
 <div class="toast-container"></div>
-
-{{--<script src="{{asset("js/admin.js")}}"></script>--}}
-{{--<script src="{{asset("js/main.js")}}"></script>--}}
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="{{asset('js/toastify.min.js')}}"></script>
+<script src="{{asset('js/sweetalert2.all.min.js')}}"></script>
 @yield('js')
 </body>
 </html>

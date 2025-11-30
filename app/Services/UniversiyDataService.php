@@ -41,7 +41,7 @@ class UniversiyDataService
                 return $row->email ?? "-";
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at ? $row->created_at->format('Y-m-d H:i') : "-";
+                return $row->created_at ? $row->created_at->format('M d, Y H:i') : "-";
             })
             ->editColumn('action', function ($row) {
                 return '

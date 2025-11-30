@@ -33,8 +33,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/universities', [UniversityController::class, 'index'])->name('universities.index');
         Route::get('/universities/{id}', [UniversityController::class, 'show'])->name('universities.show');
         Route::get('/universities/{id}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
-        Route::post('/universities/{id}', [UniversityController::class, 'update'])->name('universities.update');
+        Route::put('/universities/{id}', [UniversityController::class, 'update'])->name('universities.update');
         Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
         Route::post('/universities-data', [UniversityController::class, 'data'])->name('universities.data');
+        Route::delete('/universities/{id}', [UniversityController::class, 'softDelete'])->name('universities.destroy');
     });
 });

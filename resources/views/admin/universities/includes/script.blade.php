@@ -3,7 +3,7 @@
     let table;
     $(document).ready(function () {
 
-        table = $('#universitiesTable').DataTable({
+        table = $('#{{$table_id}}').DataTable({
             processing: true,
             serverSide: true,
             deferRender: true,
@@ -22,7 +22,7 @@
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 data: function (d) {
-                    d.search_value = $('#searchUniversities').val(); // send search term to server
+                    d.search_value = $('#searchUniversities').val();
                 }
 
             },
@@ -30,17 +30,15 @@
                 { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
                 { data: "name", name: "name"},
                 { data: "address", name: "address" },
-                { data: "website", name: "website" },
                 { data: "phone", name: "phone" },
                 { data: "email", name: "email" },
                 { data: "created_at", name: "created_at" },
-                { data: "action", name: "action" },
+                { data: "action", name: "action", orderable: false },
             ]
         });
 
-        // CUSTOM SEARCH
         $('#searchUniversities').on('keyup', function () {
-            table.draw(); // redraw table and send search_value to server
+            table.draw();
         });
 
     });
