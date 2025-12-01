@@ -1,23 +1,23 @@
-<?php
+    <?php
 
     namespace App\Http\Controllers\Admin;
 
     use App\Http\Controllers\Controller;
-    use App\Models\Algorithm;
+    use App\Models\AlgorithmCategory;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Str;
     use App\Services\AdminGeneralDataTableService;
 
-    class AlgorithmController extends Controller
+    class AlgorithmCategoryController extends Controller
     {
         protected $module, $base_route, $folder_name;
 
         public function __construct()
         {
-            $this->module = 'Algorithm';
-            $this->base_route = 'admin.algorithms.';
-            $this->folder_name = 'algorithms';
+            $this->module = 'AlgorithmCategory';
+            $this->base_route = 'admin.algorithm_categories.';
+            $this->folder_name = 'algorithm_categories';
         }
 
         /**
@@ -26,22 +26,25 @@
 
         public function index()
         {
-            $module = 'Algorithm';
-            $folder_name = 'algorithms';
-            $view_path = 'admin.algorithms.';
-            $base_route = 'admin.algorithms.';
+            $module = 'AlgorithmCategory';
+            $folder_name = 'algorithm_categories';
+            $view_path = 'admin.algorithm_categories.';
+            $base_route = 'admin.algorithm_categories.';
             $table_id = $folder_name.'Table';
-            $ajax_url = route('admin.algorithms.data');
+            $ajax_url = route('admin.algorithm_categories.data');
             $sub_heading = 'Manage '.$folder_name;
 
             $columns = [
                 ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
                 ['data' => 'name', 'name' => 'name'],
+                ['data' => 'address', 'name' => 'address'],
+                ['data' => 'phone', 'name' => 'phone'],
+                ['data' => 'email', 'name' => 'email'],
                 ['data' => 'created_at', 'name' => 'created_at'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false],
             ];
 
-            return view('admin.algorithms.index', compact(
+            return view('admin.algorithm_categories.index', compact(
                 'module','folder_name','view_path','base_route','table_id','columns','ajax_url','sub_heading'
             ));
         }
@@ -53,10 +56,10 @@
         public function data(Request $request)
         {
             $datatable = new AdminGeneralDataTableService(
-                                Algorithm::class,
-                                'admin.algorithms.',
-                                'Algorithm',
-                                ['name',  'created_at'],
+                                AlgorithmCategory::class,
+                                'admin.algorithm_categories.',
+                                'AlgorithmCategory',
+                                ['name', 'address', 'email', 'phone', 'website', 'created_at'],
                             );
             return $datatable->getDataForDataTable($request);
         }
@@ -82,30 +85,30 @@
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time().'_'.$file->getClientOriginalName();
-                    $file->move(public_path('uploads/algorithms'), $filename);
-                    $validated['logo'] = 'uploads/algorithms/' . $filename;
+                    $file->move(public_path('uploads/algorithm_categories'), $filename);
+                    $validated['logo'] = 'uploads/algorithm_categories/' . $filename;
                 }
 
                 // Slug & Key generation
                 $baseSlug = Str::slug($validated['name']);
-                $existingCount = Algorithm::where('slug', 'LIKE', $baseSlug.'%')->count();
+                $existingCount = AlgorithmCategory::where('slug', 'LIKE', $baseSlug.'%')->count();
                 $validated['slug'] = $existingCount > 0 ? $baseSlug . '-' . ($existingCount + 1) : $baseSlug;
                 $validated['key'] = Str::slug($validated['name'], '_') . '_' . uniqid();
 
-                Algorithm::create($validated);
+                AlgorithmCategory::create($validated);
 
                 DB::commit();
 
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Algorithm added successfully!'
+                    'message' => 'AlgorithmCategory added successfully!'
                 ]);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Failed to add Algorithm!'
+                    'message' => 'Failed to add AlgorithmCategory!'
                 ]);
             }
         }
@@ -117,10 +120,10 @@
         public function edit(string $id)
         {
             try {
-                $row = Algorithm::findOrFail($id);
+                $row = AlgorithmCategory::findOrFail($id);
                 return response()->json(['status'=>'success','data'=>$row]);
             } catch (\Exception $e) {
-                return response()->json(['status'=>'error','message'=>'Algorithm not found!']);
+                return response()->json(['status'=>'error','message'=>'AlgorithmCategory not found!']);
             }
         }
 
@@ -133,7 +136,7 @@
             try {
                 DB::beginTransaction();
 
-                $item = Algorithm::findOrFail($id);
+                $item = AlgorithmCategory::findOrFail($id);
 
                 $validated = $request->validate([
                     'name'        => 'required|string|max:255',
@@ -148,12 +151,12 @@
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time().'_'.$file->getClientOriginalName();
-                    $file->move(public_path('uploads/algorithms'), $filename);
-                    $validated['logo'] = 'uploads/algorithms/' . $filename;
+                    $file->move(public_path('uploads/algorithm_categories'), $filename);
+                    $validated['logo'] = 'uploads/algorithm_categories/' . $filename;
                 }
 
                 $baseSlug = Str::slug($validated['name']);
-                $existingCount = Algorithm::where('slug', 'LIKE', $baseSlug.'%')->count();
+                $existingCount = AlgorithmCategory::where('slug', 'LIKE', $baseSlug.'%')->count();
                 $validated['slug'] = $existingCount > 0 ? $baseSlug . '-' . ($existingCount + 1) : $baseSlug;
 
                 $item->update($validated);
@@ -162,13 +165,13 @@
 
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Algorithm updated successfully!'
+                    'message' => 'AlgorithmCategory updated successfully!'
                 ]);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Failed to update Algorithm!'
+                    'message' => 'Failed to update AlgorithmCategory!'
                 ]);
             }
         }
@@ -180,17 +183,17 @@
         public function softDelete(string $id)
         {
             try {
-                $item = Algorithm::findOrFail($id);
+                $item = AlgorithmCategory::findOrFail($id);
                 $item->delete();
 
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Algorithm deleted successfully!'
+                    'message' => 'AlgorithmCategory deleted successfully!'
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Failed to delete Algorithm!'
+                    'message' => 'Failed to delete AlgorithmCategory!'
                 ]);
             }
         }
@@ -202,11 +205,11 @@
         public function show(string $slug)
         {
             try {
-                $row = Algorithm::where('slug', $slug)->firstOrFail();
+                $row = AlgorithmCategory::where('slug', $slug)->firstOrFail();
                 $base_route = $this->base_route;
-                return view('admin.algorithms.show', compact('row','base_route'));
+                return view('admin.algorithm_categories.show', compact('row','base_route'));
             } catch (\Exception $e) {
-                return back()->with('error', 'Algorithm not found!');
+                return back()->with('error', 'AlgorithmCategory not found!');
             }
         }
     }

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AlgorithmCategoryController;
 use App\Http\Controllers\Admin\AlgorithmController;
+use App\Http\Controllers\Admin\AlgorithmTagController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\CollegeController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -18,16 +20,42 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
+        /*
+         * Algorithms
+         * */
         Route::get('/algorithms', [AlgorithmController::class, 'index'])->name('algorithms.index');
+        Route::get('/algorithms/{id}', [AlgorithmController::class, 'show'])->name('algorithms.show');
+        Route::get('/algorithms/{id}/edit', [AlgorithmController::class, 'edit'])->name('algorithms.edit');
+        Route::put('/algorithms/{id}', [AlgorithmController::class, 'update'])->name('algorithms.update');
         Route::post('/algorithms', [AlgorithmController::class, 'store'])->name('algorithms.store');
-        Route::POST('/algorithms-data', [AlgorithmController::class, 'getDataForIndex'])->name('algorithms.data');
+        Route::post('/algorithms-data', [AlgorithmController::class, 'data'])->name('algorithms.data');
+        Route::delete('/algorithms/{id}', [AlgorithmController::class, 'softDelete'])->name('algorithms.destroy');
 
+        /*
+         * Algorithm Tags
+         * */
+        Route::get('/algorithm-tags', [AlgorithmTagController::class, 'index'])->name('algorithm_tags.index');
+        Route::get('/algorithm-tags/{id}', [AlgorithmTagController::class, 'show'])->name('algorithm_tags.show');
+        Route::get('/algorithm-tags/{id}/edit', [AlgorithmTagController::class, 'edit'])->name('algorithm_tags.edit');
+        Route::put('/algorithm-tags/{id}', [AlgorithmTagController::class, 'update'])->name('algorithm_tags.update');
+        Route::post('/algorithm-tags', [AlgorithmTagController::class, 'store'])->name('algorithm_tags.store');
+        Route::post('/algorithm-tags-data', [AlgorithmTagController::class, 'data'])->name('algorithm_tags.data');
+        Route::delete('/algorithm-tags/{id}', [AlgorithmTagController::class, 'softDelete'])->name('algorithm_tags.destroy');
+
+        /*
+         * Algorithm Categories
+         * */
+        Route::get('/algorithm-categories', [AlgorithmCategoryController::class, 'index'])->name('algorithm_categories.index');
+        Route::get('/algorithm-categories/{id}', [AlgorithmCategoryController::class, 'show'])->name('algorithm_categories.show');
+        Route::get('/algorithm-categories/{id}/edit', [AlgorithmCategoryController::class, 'edit'])->name('algorithm_categories.edit');
+        Route::put('/algorithm-categories/{id}', [AlgorithmCategoryController::class, 'update'])->name('algorithm_categories.update');
+        Route::post('/algorithm-categories', [AlgorithmCategoryController::class, 'store'])->name('algorithm_categories.store');
+        Route::post('/algorithm-categories-data', [AlgorithmCategoryController::class, 'data'])->name('algorithm_categories.data');
+        Route::delete('/algorithm-categories/{id}', [AlgorithmCategoryController::class, 'softDelete'])->name('algorithm_categories.destroy');
 
         Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
         Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
         Route::POST('/projects-data', [ProjectController::class, 'getDataForIndex'])->name('projects.data');
-
-
 
         Route::get('/colleges', [CollegeController::class, 'index'])->name('colleges.index');
         Route::get('/colleges/{id}', [ProjectController::class, 'show'])->name('colleges.show');

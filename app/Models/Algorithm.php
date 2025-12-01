@@ -15,4 +15,19 @@ class Algorithm extends Model
     {
         return $this->belongsToMany(Project::class, 'project_algorithm', 'algorithm_id', 'project_id');
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(
+            AlgorithmCategory::class,
+            'algorithm_algorithm_category',
+            'algorithm_id',
+            'algorithm_category_id'
+        );
+    }
+
+    public function tags(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'algorithm_tags', 'algorithm_id', 'tag_id');
+    }
 }
