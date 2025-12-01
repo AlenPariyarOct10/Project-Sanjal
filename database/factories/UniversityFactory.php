@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\University;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\University>
- */
+
 class UniversityFactory extends Factory
 {
     /**
@@ -14,12 +14,29 @@ class UniversityFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+
+    protected static $slugTracker = [];
+
     public function definition(): array
     {
+        $name = $this->faker->company . ' University';
+        $baseSlug = Str::slug($name);
+
+        // Track slugs already used in this seeding run
+        if (!isset(self::$slugTracker[$baseSlug])) {
+            self::$slugTracker[$baseSlug] = 0;
+        }
+
+        self::$slugTracker[$baseSlug]++;
+        $slug = $baseSlug . (self::$slugTracker[$baseSlug] > 1 ? '-' . self::$slugTracker[$baseSlug] : '');
+
         return [
-            'name' => $this->faker->company . ' University',
+            'name' => $name,
+            'key' => uniqid('uni_'),
+            'slug' => $slug,
             'address' => $this->faker->city,
-            'description' => $this->faker->text(10),
+            'description' => $this->faker->text(50),
             'website' => $this->faker->url,
             'phone' => $this->faker->phoneNumber,
             'email' => $this->faker->unique()->safeEmail,
@@ -30,4 +47,5 @@ class UniversityFactory extends Factory
             'linkedin' => $this->faker->url,
         ];
     }
+
 }

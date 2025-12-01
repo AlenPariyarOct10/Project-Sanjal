@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UniversityRequest extends FormRequest
 {
@@ -59,5 +61,13 @@ class UniversityRequest extends FormRequest
             "youtube.url"      => "YouTube URL must be valid.",
             "linkedin.url"     => "LinkedIn URL must be valid.",
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => 'validation_error',
+            'errors' => $validator->errors()
+        ], 422));
     }
 }

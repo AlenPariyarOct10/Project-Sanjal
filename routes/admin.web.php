@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CollegeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\SystemInfoController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/colleges/{id}', [ProjectController::class, 'show'])->name('colleges.show');
 
         Route::get('/universities', [UniversityController::class, 'index'])->name('universities.index');
-        Route::get('/universities/{id}', [UniversityController::class, 'show'])->name('universities.show');
+        Route::get('/universities/{slug}', [UniversityController::class, 'show'])->name('universities.show');
         Route::get('/universities/{id}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
         Route::put('/universities/{id}', [UniversityController::class, 'update'])->name('universities.update');
         Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
@@ -47,5 +48,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/tags/{id}', [TagController::class, 'softDelete'])->name('tags.destroy');
         Route::put('/tags/{id}', [TagController::class, 'update'])->name('tags.update');
 
+
+        /*
+         * System Info
+         * */
+        Route::get('/system-infos', [SystemInfoController::class, 'index'])->name('system_infos.index');
+        Route::get('/system-infos/{id}', [SystemInfoController::class, 'show'])->name('system_infos.show');
+        Route::get('/system-infos/{id}/edit', [SystemInfoController::class, 'edit'])->name('system_infos.edit');
+        Route::put('/system-infos/{id}', [SystemInfoController::class, 'update'])->name('system_infos.update');
+        Route::post('/system-infos', [SystemInfoController::class, 'store'])->name('system_infos.store');
+        Route::post('/system-infos-data', [SystemInfoController::class, 'data'])->name('system_infos.data');
+        Route::delete('/system-infos/{id}', [SystemInfoController::class, 'softDelete'])->name('system_infos.destroy');
     });
 });

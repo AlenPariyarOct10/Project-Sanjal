@@ -6,12 +6,15 @@ use App\Models\University;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Yajra\DataTables\DataTables;
 
 class UniversiyDataService
 {
     public function getDataForDataTable(Request $request)
     {
+        $base_route = $request->base_route;
+        $module = $request->module;
         $query = University::query();
 
         // Handle search
@@ -43,28 +46,35 @@ class UniversiyDataService
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('M d, Y H:i') : "-";
             })
-            ->editColumn('action', function ($row) {
-                return '
-                    <div class="flex gap-2">
-                        <a href="'.route('admin.universities.show', $row->id).'"
+            ->editColumn('action', function ($row) use ($base_route, $module) {
+                $group = '<div class="flex gap-2">';
+
+                if(Route::has($base_route.'show')) {
+                    $group .= '<a href="' . route('admin.universities.show', $row->id) . '"
                            class="px-3 py-1 bg-white text-black border border-black rounded-sm hover:bg-black btn hover:text-white transition"
-                           title="View">
+                           title="View '.$module.'">
                            <i class="fa fa-eye"></i>
-                        </a>
+                        </a>';
+                }
 
-                        <a href="'.route('admin.universities.edit', $row->id).'"
-                           class="px-3 py-1 bg-white text-black border border-black rounded-sm hover:bg-black btn hover:text-white transition"
-                           title="Edit">
+                if(Route::has($base_route.'edit')) {
+                    $group .= '<button data-id="'.$row->id.'"
+                           class="editBtn px-3 py-1 bg-white text-black border border-black rounded-sm hover:bg-black btn hover:text-white transition"
+                           title="Edit '.$module.'">
                            <i class="fas fa-edit"></i>
-                        </a>
+                        </button>';
+                }
 
-                        <button data-id="'.$row->id.'"
+                if(Route::has($base_route.'destroy')) {
+                    $group .= '<button data-id="'.$row->id.'"
                            class="deleteBtn px-3 py-1 bg-white text-black border border-black rounded-sm hover:bg-black btn hover:text-white transition"
-                           title="Delete">
+                           title="Delete '.$module.'">
                            <i class="fa fa-trash"></i>
-                        </button>
-                    </div>
-                    ';
+                        </button>';
+                }
+
+                $group .= '</div>';
+                return $group;
             })
             ->rawColumns(['action'])
             ->make(true);

@@ -5,14 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UniversityRequest;
 use App\Models\University;
+use App\Services\AdminGeneralDataTableService;
 use App\Services\UniversiyDataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Mockery\CountValidator\Exception;
 use Yajra\DataTables\DataTables;
 
 class UniversityController extends Controller
 {
+    protected $base_route, $module, $folder_name;
+
+    public function __construct()
+    {
+        $this->module = 'University';
+        $this->base_route = "admin.universities.";
+        $this->folder_name = "universities.";
+    }
     /**
      * Display a listing of the resource.
      */
@@ -24,10 +34,22 @@ class UniversityController extends Controller
         $view_path = "admin.universities.";
         $base_route = "admin.universities.";
         $table_id = $folder_name."Table";
+        $ajax_url = route('admin.universities.data');
+        $sub_heading = "Manage ".$folder_name." across Nepal";
+
+        $columns = [
+            ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
+            ['data' => 'name', 'name' => 'name'],
+            ['data' => 'address', 'name' => 'address'],
+            ['data' => 'phone', 'name' => 'phone'],
+            ['data' => 'email', 'name' => 'email'],
+            ['data' => 'created_at', 'name' => 'created_at'],
+            ['data' => 'action', 'name' => 'action', 'orderable' => false],
+        ];
 
         return view(
             'admin.universities.index',
-            compact('module', 'folder_name', 'view_path', 'base_route', 'table_id',)
+            compact('module', 'folder_name', 'view_path', 'base_route', 'table_id', 'columns','ajax_url', 'sub_heading' )
         );
     }
 
@@ -42,7 +64,7 @@ class UniversityController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UniversityRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -72,6 +94,12 @@ class UniversityController extends Controller
                 $validated['logo'] = 'uploads/universities/' . $filename;
             }
 
+            $name = $validated['name'];
+            $baseSlug = Str::slug($name);
+            $existingCount = University::where('slug', 'LIKE', $baseSlug . '%')->count();
+            $validated['slug'] = $existingCount > 0 ? $baseSlug . '-' . ($existingCount + 1) : $baseSlug;
+            $validated['key'] = Str::slug($validated['name'], '_').'_' . uniqid();
+
             University::create($validated);
 
             DB::commit();
@@ -94,7 +122,14 @@ class UniversityController extends Controller
 
     public function data(Request $request)
     {
-        return app(UniversiyDataService::class)->getDataForDataTable($request);
+        $datatable = new AdminGeneralDataTableService(
+            University::class,
+            'admin.universities.',
+            'University',
+            ['name', 'address', 'email', 'phone', 'website', 'created_at'],
+        );
+
+        return $datatable->getDataForDataTable($request);
     }
 
 
@@ -102,9 +137,20 @@ class UniversityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        return view('admin.universities.show');
+        try {
+            $base_route = $this->base_route;
+
+            $row = University::where('slug', $slug)->firstOrFail();
+
+            return view(
+                'admin.universities.show',
+                compact('base_route','row')
+            );
+        } catch (\Exception $e) {
+            return back()->with('error', 'University not found!');
+        }
     }
 
     /**
@@ -157,6 +203,11 @@ class UniversityController extends Controller
                 $file->move(public_path('uploads/universities'), $filename);
                 $validated['logo'] = 'uploads/universities/' . $filename;
             }
+
+            $name = $validated['name'];
+            $baseSlug = Str::slug($name);
+            $existingCount = University::where('slug', 'LIKE', $baseSlug . '%')->count();
+            $validated['slug'] = $existingCount > 0 ? $baseSlug . '-' . ($existingCount + 1) : $baseSlug;
 
             $university->update($validated);
 

@@ -8,7 +8,7 @@
             <div class="auth-banner">
                 <div class="auth-banner-icon">👨‍💻</div>
                 <h2>Welcome Back</h2>
-                <p>Access your {{ config('app.name', 'Laravel') }} account to collaborate and share your projects</p>
+                <p>Access your {{getSystemInfo("system_title", "ProjectSanjal")}} account to collaborate and share your projects</p>
             </div>
 
             <!-- Login Form Section -->
@@ -20,8 +20,8 @@
                     <div class="form-logo">
                         <div class="logo-icon">N</div>
                         <div>
-                            <h3 style="margin: 0">{{ config('app.name', 'Laravel') }}</h3>
-                            <p style="margin: 0; font-size: 12px; color: var(--subtext)">Project Sharing Platform</p>
+                            <h3 style="margin: 0">{{getSystemInfo("system_title", "ProjectSanjal")}}</h3>
+                            <p style="margin: 0; font-size: 12px; color: var(--subtext)">{{getSystemInfo("system_short_description", "Share & Collaborate IT Projects")}}</p>
                         </div>
                     </div>
 

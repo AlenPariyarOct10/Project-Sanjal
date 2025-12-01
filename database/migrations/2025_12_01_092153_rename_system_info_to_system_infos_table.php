@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('system_infos', function (Blueprint $table) {
-            $table->id();
-            $table->string('key')->unique();
-            $table->string('value')->nullable();
-            $table->boolean('status')->default(true);
-            $table->timestamps();
+        Schema::table('system_infos', function (Blueprint $table) {
+            Schema::rename('system_infos', 'system_infos');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('system_infos');
+        Schema::table('system_infos', function (Blueprint $table) {
+            Schema::rename('system_infos', 'system_infos');
+        });
     }
 };
