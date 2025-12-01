@@ -31,7 +31,7 @@ class UniversityRequest extends FormRequest
             "logo"        => "nullable|image|mimes:jpg,jpeg,png,svg,webp|max:2048",
 
             "website"     => "nullable|url|max:255",
-            "facebook"    => "url|max:255",
+            "facebook"    => "nullable|max:255",
             "twitter"     => "nullable|url|max:255",
             "instagram"   => "nullable|url|max:255",
             "youtube"     => "nullable|url|max:255",
