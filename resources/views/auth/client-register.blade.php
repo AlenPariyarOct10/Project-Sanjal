@@ -158,10 +158,10 @@
 
                     <button type="submit" class="btn">Create My Account</button>
 
-                    {{-- <p style="text-align: center; color: var(--subtext)">
+                    <p style="text-align: center; color: var(--subtext)">
                         Already have an account?
-                        <a href="{{ route('login') }}" class="form-link">Login here</a>
-                    </p> --}}
+                        <a href="{{ route('client.login') }}" class="form-link">Login here</a>
+                    </p>
                 </form>
             </div>
         </div>

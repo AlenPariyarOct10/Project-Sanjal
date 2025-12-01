@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\College;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class RegisteredClientController extends Controller
 {
@@ -16,6 +15,7 @@ class RegisteredClientController extends Controller
     {
         $colleges = College::all(['id', 'name']); // Fetch all colleges
         $roles = Role::all(['id', 'title']);      // Fetch all roles
+
         return view('auth.client-register', compact('colleges', 'roles'));
     }
 
@@ -71,6 +71,6 @@ class RegisteredClientController extends Controller
             'role_id' => $request->role_id,
         ]);
 
-       // return redirect()->route('client.login')->with('success', 'Registration successful. Please login.');
+        return redirect()->route('client.login')->with('success', 'Registration successful. Please login.');
     }
 }
