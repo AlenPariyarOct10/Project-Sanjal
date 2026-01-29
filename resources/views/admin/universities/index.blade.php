@@ -1,11 +1,6 @@
 @extends("layouts.admin")
 
 @section("css")
-    <style>
-
-
-
-    </style>
     <link rel="stylesheet" href="{{asset('css/data-table.min.css')}}">
     <link rel="stylesheet" href="{{asset('plugin/scroller.dataTables.min.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"

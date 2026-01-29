@@ -1,0 +1,26 @@
+-- Design Approach
+INSERT INTO `algorithm_categories`(`id`, `type`, `name`, `description`, `slug`, `key`, `status`, `deleted_at`, `created_at`, `updated_at`) VALUES
+                                                                                                                                               (1, 'Design Approach', 'Divide and Conquer', 'Break the problem into sub-problems and combine solutions', 'divide-and-conquer', 'divide_and_conquer', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (2, 'Design Approach', 'Greedy', 'Make locally optimal choices at each step', 'greedy', 'greedy', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (3, 'Design Approach', 'Dynamic Programming', 'Solve by storing subproblem results to avoid recomputation', 'dynamic-programming', 'dynamic_programming', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (4, 'Design Approach', 'Backtracking', 'Try all possibilities and backtrack if solution fails', 'backtracking', 'backtracking', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (5, 'Design Approach', 'Branch and Bound', 'Prune paths that cannot lead to optimal solutions', 'branch-and-bound', 'branch_and_bound', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (6, 'Design Approach', 'Randomized', 'Use random decisions during execution', 'randomized', 'randomized', 1, NULL, NOW(), NOW());
+
+-- Problem Type
+INSERT INTO `algorithm_categories`(`id`, `type`, `name`, `description`, `slug`, `key`, `status`, `deleted_at`, `created_at`, `updated_at`) VALUES
+                                                                                                                                               (7, 'Problem Type', 'Sorting', 'Arrange data in a particular order', 'sorting', 'sorting', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (8, 'Problem Type', 'Searching', 'Locate a specific element in data', 'searching', 'searching', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (9, 'Problem Type', 'Graph', 'Solve problems related to graphs', 'graph', 'graph', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (10, 'Problem Type', 'String', 'Solve problems related to string manipulation', 'string', 'string', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (11, 'Problem Type', 'Numerical', 'Solve numerical problems like equations or integration', 'numerical', 'numerical', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (12, 'Problem Type', 'Recursive', 'Solve problems using recursion', 'recursive', 'recursive', 1, NULL, NOW(), NOW());
+
+-- Complexity
+INSERT INTO `algorithm_categories`(`id`, `type`, `name`, `description`, `slug`, `key`, `status`, `deleted_at`, `created_at`, `updated_at`) VALUES
+                                                                                                                                               (13, 'Complexity', 'O(1)', 'Constant time complexity', 'o-1', 'o_1', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (14, 'Complexity', 'O(log n)', 'Logarithmic time complexity', 'o-log-n', 'o_log_n', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (15, 'Complexity', 'O(n)', 'Linear time complexity', 'o-n', 'o_n', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (16, 'Complexity', 'O(n log n)', 'Linearithmic time complexity', 'o-n-log-n', 'o_n_log_n', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (17, 'Complexity', 'O(n^2)', 'Quadratic time complexity', 'o-n-square', 'o_n_square', 1, NULL, NOW(), NOW()),
+                                                                                                                                               (18, 'Complexity', 'Exponential', 'Exponential time complexity', 'exponential', 'exponential', 1, NULL, NOW(), NOW());
