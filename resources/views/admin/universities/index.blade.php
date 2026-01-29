@@ -131,5 +131,5 @@
     <script src="{{asset('js/data-table.min.js')}}"></script>
     <script src="{{asset('plugin/dataTables.scroller.min.js')}}"></script>
     @include("admin.includes.admin_index_script")
-    @include("admin.algorithms.includes.script")
+    @include("admin.universities.includes.script")
 @endsection
