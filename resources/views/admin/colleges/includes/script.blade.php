@@ -1,96 +1,39 @@
 <script>
-    /* --------------------------------------
-       Helper: Open Modal
-    ---------------------------------------*/
-    function openModal(modalId) {
-        const modal = document.getElementById(modalId);
+    function openEdit{{$module}}Modal(id) {
+        const url = "{{ route('admin.colleges.edit', ':id') }}".replace(':id', id);
 
-        if (!modal) return;
+        $.get(url, function(response) {
+            if (response.status === 'success') {
+                const data = response.data;
+                const moduleId = "{{module_id($module, '')}}";
+                
+                document.getElementById(moduleId + "Id").value = data.id;
+                document.getElementById(moduleId + "Name").value = data.name;
+                document.getElementById(moduleId + "UniversityId").value = data.university_id || '';
+                document.getElementById(moduleId + "Description").value = data.description || '';
+                document.getElementById(moduleId + "Status").value = data.status;
+                document.getElementById(moduleId + "Address").value = data.address || '';
+                document.getElementById(moduleId + "Phone").value = data.phone || '';
+                document.getElementById(moduleId + "Email").value = data.email || '';
+                document.getElementById(moduleId + "Website").value = data.website || '';
+                document.getElementById(moduleId + "Facebook").value = data.facebook || '';
+                document.getElementById(moduleId + "Twitter").value = data.twitter || '';
+                document.getElementById(moduleId + "Instagram").value = data.instagram || '';
+                document.getElementById(moduleId + "Youtube").value = data.youtube || '';
+                document.getElementById(moduleId + "Linkedin").value = data.linkedin || '';
+                
+                if (data.logo) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.src = "/storage/" + data.logo;
+                    preview.classList.remove('hidden');
+                } else {
+                    document.getElementById('logoPreview').classList.add('hidden');
+                }
 
-        modal.style.display = "flex";         // show modal immediately
-        requestAnimationFrame(() => {
-            modal.classList.add("modal-show");
-            modal.classList.remove("modal-hide");
-        });
-    }
-
-    /* --------------------------------------
-       Helper: Close Modal
-    ---------------------------------------*/
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-
-        modal.classList.add("modal-hide");
-        modal.classList.remove("modal-show");
-
-        setTimeout(() => {
-            modal.style.display = "none";
-        }, 200); // sync with fade-out animation
-    }
-
-    /* --------------------------------------
-       Click Outside to Close
-    ---------------------------------------*/
-    document.querySelectorAll(".modal").forEach((modal) => {
-        modal.addEventListener("click", (e) => {
-            if (e.target.classList.contains("modal")) {
-                modal.classList.remove("modal-show");
-                setTimeout(() => (modal.style.display = "none"), 200);
+                document.querySelector(`#${moduleId}Modal h2`).innerText = "Edit " + "{{$module}}";
+                document.querySelector(`#${moduleId}Modal button[type='submit']`).innerText = "Update " + "{{$module}}";
+                openModal(moduleId + "Modal");
             }
         });
-    });
-
-    /* --------------------------------------
-       ESC Key Close
-    ---------------------------------------*/
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            document.querySelectorAll(".modal-show").forEach((modal) => {
-                closeModal(modal.id);
-            });
-        }
-    });
-
-    /* --------------------------------------
-       Open University Modal
-    ---------------------------------------*/
-    document.getElementById("addUniversityBtn").addEventListener("click", () => {
-        document.getElementById("universityForm").reset();
-        openModal("universityModal");
-    });
-
-    /* --------------------------------------
-       Open College Modal
-    ---------------------------------------*/
-    document.getElementById("addCollegeBtn").addEventListener("click", () => {
-        document.getElementById("collegeForm").reset();
-        openModal("collegeModal");
-    });
-
-    /* --------------------------------------
-       Close Button Functions
-    ---------------------------------------*/
-    function closeUniversityModal() {
-        closeModal("universityModal");
-    }
-
-    function closeCollegeModal() {
-        closeModal("collegeModal");
-    }
-
-    /* --------------------------------------
-       Submit Handlers (AJAX-ready)
-    ---------------------------------------*/
-    function handleUniversitySubmit(event) {
-        event.preventDefault();
-        // TODO: add AJAX call here
-        closeUniversityModal();
-    }
-
-    function handleCollegeSubmit(event) {
-        event.preventDefault();
-        // TODO: add AJAX call here
-        closeCollegeModal();
     }
 </script>

@@ -27,8 +27,10 @@
                 ])
                 @endcomponent
             </div>
-            <a class="btn" id="add{{$module}}Btn">Algorithm Tags</a>
-            <a class="btn" id="add{{$module}}Btn">Algorithm Categories</a>
+            <div class="flex gap-3 mt-4">
+                <a href="{{ route('admin.algorithm_categories.index') }}" class="btn btn-outline">Manage Categories</a>
+                <a href="{{ route('admin.algorithm_tags.index') }}" class="btn btn-outline">Manage Tags</a>
+            </div>
 
         </section>
     </main>
@@ -61,6 +63,32 @@
                     <input type="text" id="{{module_id($module, "resource_url")}}" name="resource_url" class="w-full px-3 py-2 border ">
                 </div>
 
+                <!-- Categories -->
+                <div class="form-group mb-3">
+                    <label class="block font-medium">Categories</label>
+                    <div class="border p-2 max-h-40 overflow-y-auto bg-gray-50">
+                        @foreach($categories as $category)
+                            <label class="flex items-center gap-2 mb-1 cursor-pointer">
+                                <input type="checkbox" name="category_ids[]" value="{{$category->id}}" class="category-checkbox">
+                                <span>{{$category->name}}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="form-group mb-3">
+                    <label class="block font-medium">Tags</label>
+                    <div class="border p-2 max-h-40 overflow-y-auto bg-gray-50">
+                        @foreach($tags as $tag)
+                            <label class="flex items-center gap-2 mb-1 cursor-pointer">
+                                <input type="checkbox" name="tag_ids[]" value="{{$tag->id}}" class="tag-checkbox">
+                                <span>{{$tag->name}}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
                 <!-- image -->
                 <div class="form-group mb-3">
                     <label for="{{module_id($module, "image")}}" class="block font-medium">Image</label>
@@ -69,10 +97,18 @@
                 </div>
 
                 <!-- Actions -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "status")}}" class="block font-medium">Status</label>
+                    <select id="{{module_id($module, "status")}}" name="status" class="w-full px-3 py-2 border">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
                 <div class="form-group flex justify-end gap-3 mt-4">
                     <button type="button" class="btn btn-outline px-4 py-2" onclick="close{{$module}}Modal()">Cancel
                     </button>
-                    <button type="submit" class="btn px-4 py-2">Add {{$module}}</button>
+                    <button type="submit" class="btn px-4 py-2">Save {{$module}}</button>
                 </div>
             </form>
         </div>

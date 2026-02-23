@@ -3,6 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Project;
+use App\Models\College;
+use App\Models\University;
+use App\Models\Algorithm;
+use App\Models\Course;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -12,7 +19,26 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard.index');
+        $stats = [
+            'total_users' => User::count(),
+            'total_projects' => Project::count(),
+            'total_colleges' => College::count(),
+            'total_universities' => University::count(),
+            'total_algorithms' => Algorithm::count(),
+            'total_courses' => Course::count(),
+            'total_subjects' => Subject::count(),
+        ];
+
+        $recent_projects = Project::with(['user', 'course', 'subject'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $recent_users = User::latest()
+            ->limit(5)
+            ->get();
+
+        return view('admin.dashboard.index', compact('stats', 'recent_projects', 'recent_users'));
     }
 
     /**
@@ -20,7 +46,7 @@ class DashboardController extends Controller
      */
     public function create()
     {
-        //
+    //
     }
 
     /**
@@ -28,7 +54,7 @@ class DashboardController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    //
     }
 
     /**
@@ -36,7 +62,7 @@ class DashboardController extends Controller
      */
     public function show(string $id)
     {
-        //
+    //
     }
 
     /**
@@ -44,7 +70,7 @@ class DashboardController extends Controller
      */
     public function edit(string $id)
     {
-        //
+    //
     }
 
     /**
@@ -52,7 +78,7 @@ class DashboardController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+    //
     }
 
     /**
@@ -60,6 +86,6 @@ class DashboardController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+    //
     }
 }

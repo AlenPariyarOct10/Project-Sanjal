@@ -1,91 +1,105 @@
 @extends("layouts.admin")
 
+@section("css")
+    <link rel="stylesheet" href="{{asset('css/data-table.min.css')}}">
+    <link rel="stylesheet" href="{{asset('plugin/scroller.dataTables.min.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+@endsection
+
 @section("content")
     <!-- Main Content -->
-    <main class="py-12">
-        <section class="max-w-6xl mx-auto px-4">
-            <!-- Admin Header -->
-            <div class="flex justify-between items-start mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2">Users Management</h1>
-                    <p class="text-gray-600">Manage platform users</p>
-                </div>
-                <button class="bg-black text-white font-semibold px-6 py-2" id="addUserBtn">Add User</button>
-            </div>
-
-            <!-- Search & Filter -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <input type="text" id="searchUsers" placeholder="Search by name or email..." class="px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                <select id="filterRole" class="px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Roles</option>
-                    <option value="student">Student</option>
-                    <option value="instructor">Instructor</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-
-            <!-- Users Table -->
-            <div class="bg-white border border-gray-200 overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Name</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Email</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Role</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">College</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Joined</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                    <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="flex justify-center gap-2 mt-6" id="usersPagination">
-                <!-- Populated by JS -->
+    <main>
+        <section class="admin-container">
+            <div class="admin-section">
+                @component('components.admin-datatable', [
+                    'table_id' => $table_id,
+                    'module' => $module,
+                    'sub_heading' => $sub_heading,
+                    'ajax_url' => $ajax_url,
+                    'columns' => $columns,
+                    'folder_name' => $folder_name,
+                    'search' => true
+                ])
+                @endcomponent
             </div>
         </section>
     </main>
 
-    <!-- Add/Edit User Modal -->
-    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="userModal">
-        <div class="bg-white w-full max-w-md max-h-96 overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-gray-200 p-6">
-                <h2 class="text-xl font-bold">Add New User</h2>
-                <button class="text-2xl text-gray-600 hover:text-black" onclick="closeUserModal()">&times;</button>
+    <div class="modal h-full" id="{{module_id($module, "modal")}}">
+        <div class="modal-content max-h-full overflow-y-auto">
+            <div class="modal-header flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Add User</h2>
+                <button class="modal-close text-2xl font-bold" onclick="closeUserModal()">&times;</button>
             </div>
-            <form id="userForm" onsubmit="handleUserSubmit(event)" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Full Name *</label>
-                    <input type="text" id="userName" required class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
+
+            <form id="{{module_id($module, "form")}}" onsubmit="handleUserSubmit(event)">
+                <input type="hidden" id="{{module_id($module, "id")}}" name="id">
+                
+                <!-- Name -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "name")}}" class="block font-medium required">Full Name</label>
+                    <input type="text" id="{{module_id($module, "name")}}" name="name" class="w-full px-3 py-2 border ">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Email *</label>
-                    <input type="email" id="userEmail" required class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
+
+                <!-- Email -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "email")}}" class="block font-medium required">Email Address</label>
+                    <input type="email" id="{{module_id($module, "email")}}" name="email" class="w-full px-3 py-2 border ">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Role *</label>
-                    <select id="userRole" required class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                        <option value="student">Student</option>
-                        <option value="instructor">Instructor</option>
-                        <option value="admin">Admin</option>
+
+                <!-- Password -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "password")}}" class="block font-medium">Password</label>
+                    <input type="password" id="{{module_id($module, "password")}}" name="password" class="w-full px-3 py-2 border " placeholder="Leave blank to keep current password in edit mode">
+                </div>
+
+                <!-- Role -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "role_id")}}" class="block font-medium required">Role</label>
+                    <select id="{{module_id($module, "role_id")}}" name="role_id" class="w-full px-3 py-2 border">
+                        @foreach($roles as $role)
+                            <option value="{{$role->id}}">{{$role->title}}</option>
+                        @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">College</label>
-                    <select id="userCollege" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                        <option value="">Select College</option>
+
+                <!-- College -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "college_id")}}" class="block font-medium">College</label>
+                    <select id="{{module_id($module, "college_id")}}" name="college_id" class="w-full px-3 py-2 border">
+                        <option value="">None</option>
+                        @foreach($colleges as $college)
+                            <option value="{{$college->id}}">{{$college->name}}</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="flex gap-4 justify-end pt-4">
-                    <button type="button" class="border border-gray-200 text-gray-900 font-semibold px-4 py-2 hover:bg-gray-100" onclick="closeUserModal()">Cancel</button>
-                    <button type="submit" class="bg-black text-white font-semibold px-4 py-2">Add User</button>
+
+                <!-- Status -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "status")}}" class="block font-medium required">Status</label>
+                    <select id="{{module_id($module, "status")}}" name="status" class="w-full px-3 py-2 border">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-group flex justify-end gap-3 mt-4">
+                    <button type="button" class="btn btn-outline px-4 py-2" onclick="closeUserModal()">Cancel
+                    </button>
+                    <button type="submit" class="btn px-4 py-2">Save User</button>
                 </div>
             </form>
         </div>
     </div>
+@endsection
+
+@section("js")
+    <script src="{{asset('js/jquery.min.js')}}"></script>
+    <script src="{{asset('js/data-table.min.js')}}"></script>
+    <script src="{{asset('plugin/dataTables.scroller.min.js')}}"></script>
+    @include("admin.includes.admin_index_script")
+    @include("admin.users.includes.script")
 @endsection

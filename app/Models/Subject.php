@@ -14,6 +14,6 @@ class Subject extends Model
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'project_algorithm', 'algorithm_id', 'project_id');
+        return $this->hasMany(Project::class);
     }
 }

@@ -1,110 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Projects - Nepal IT Project Hub</title>
-    <!-- Removed custom CSS link and inline Tailwind config -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-white text-gray-900 font-sans">
-<!-- Header & Navigation -->
-<header class="border-b border-gray-200 sticky top-0 z-50 bg-white">
-    <div class="max-w-6xl mx-auto px-4">
-        <nav class="flex justify-between items-center py-4">
-            <div class="flex items-center gap-2 font-bold text-lg">
-                <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">N</div>
-                <span>Nepal IT Project Hub</span>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('My Projects') }}
+            </h2>
+            <a href="{{ route('client.projects.create') }}" class="bg-black text-white px-4 py-2 rounded text-sm font-bold">
+                Submit New Project
+            </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Search & Actions -->
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <form action="{{ route('client.projects.index') }}" method="GET" class="w-full md:w-96 flex gap-2">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm" placeholder="Search my projects...">
+                    </div>
+                    <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-black transition-colors text-sm font-semibold">Search</button>
+                    @if(request('search'))
+                        <a href="{{ route('client.projects.index') }}" class="text-gray-500 hover:text-black py-2 text-sm">Clear</a>
+                    @endif
+                </form>
             </div>
-            <ul class="hidden md:flex gap-6 list-none items-center" id="navLinks">
-                <li><a href="index.html" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
-                <li><a href="projects.html" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
-                <li><a href="submit.html" class="bg-black text-white font-semibold px-4 py-2">Submit Project</a></li>
-            </ul>
-            <button class="md:hidden flex flex-col gap-1" id="navToggle">
-                <span class="w-6 h-0.5 bg-gray-900"></span>
-                <span class="w-6 h-0.5 bg-gray-900"></span>
-                <span class="w-6 h-0.5 bg-gray-900"></span>
-            </button>
-        </nav>
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    @if($projects->isEmpty())
+                        <div class="text-center py-12">
+                            <p class="text-gray-500 mb-4">You haven't submitted any projects yet.</p>
+                            <a href="{{ route('client.projects.create') }}" class="text-blue-600 font-bold hover:underline">Submit your first project</a>
+                        </div>
+                    @else
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="py-4 px-2 font-bold text-sm text-gray-600">PROJECT</th>
+                                        <th class="py-4 px-2 font-bold text-sm text-gray-600">STATUS</th>
+                                        <th class="py-4 px-2 font-bold text-sm text-gray-600">DATE</th>
+                                        <th class="py-4 px-2 font-bold text-sm text-gray-600 text-right">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($projects as $project)
+                                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                            <td class="py-4 px-2">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-12 h-12 bg-gray-100 flex-shrink-0">
+                                                        @if($project->image)
+                                                            <img src="{{ asset('storage/' . $project->image) }}" class="w-full h-full object-cover">
+                                                        @endif
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-bold text-gray-900">{{ $project->name }}</div>
+                                                        <div class="text-xs text-gray-500 truncate max-w-xs">{{ $project->description }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-2">
+                                                @if($project->status)
+                                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded">PUBLISHED</span>
+                                                @else
+                                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded">PENDING</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-4 px-2 text-sm text-gray-600">
+                                                {{ $project->created_at->format('M d, Y') }}
+                                            </td>
+                                            <td class="py-4 px-2 text-right">
+                                                <div class="flex justify-end gap-2">
+                                                    <a href="{{ route('projects.show', $project->slug) }}" target="_blank" class="p-2 text-gray-400 hover:text-black" title="View">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                    </a>
+                                                    <a href="{{ route('client.projects.edit', $project->id) }}" class="p-2 text-gray-400 hover:text-blue-600" title="Edit">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </a>
+                                                    <form action="{{ route('client.projects.destroy', $project->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this project?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="p-2 text-gray-400 hover:text-red-600" title="Delete">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-6">
+                            {{ $projects->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
-</header>
-
-<!-- Main Content -->
-<main class="py-8 md:py-12 bg-white min-h-screen">
-    <div class="max-w-6xl mx-auto px-4">
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold mb-2">Browse Projects</h1>
-            <p class="text-gray-600">Discover projects from IT students across Nepal</p>
-        </div>
-
-        <!-- Filters -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 bg-white p-4 border border-gray-200">
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">Search</label>
-                <input type="text" id="search-projects" placeholder="Search by title..." class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">College</label>
-                <select id="college-filter" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Colleges</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">University</label>
-                <select id="university-filter" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Universities</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">Semester</label>
-                <select id="semester-filter" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Semesters</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">Technology</label>
-                <select id="tech-filter" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Technologies</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-900 mb-2">Algorithm</label>
-                <select id="algo-filter" class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-black">
-                    <option value="">All Algorithms</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Projects Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-container"></div>
-    </div>
-</main>
-
-<!-- Footer -->
-<footer class="bg-gray-900 text-white py-8 mt-12">
-    <div class="max-w-6xl mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-                <h4 class="font-bold mb-2">About Nepal IT Project Hub</h4>
-                <p class="text-gray-300 text-sm">A platform for IT students to share projects and collaborate.</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-2">Quick Links</h4>
-                <ul class="text-sm space-y-1">
-                    <li><a href="index.html" class="text-gray-300 hover:text-white">Home</a></li>
-                    <li><a href="projects.html" class="text-gray-300 hover:text-white">Projects</a></li>
-                    <li><a href="submit.html" class="text-gray-300 hover:text-white">Submit</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Nepal IT Project Hub. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-
-<script src="assets/js/main.js"></script>
-<script src="assets/js/project.js"></script>
-</body>
-</html>
+</x-app-layout>

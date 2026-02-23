@@ -1,0 +1,262 @@
+<?php
+
+namespace App\Http\Controllers\Client;
+
+use App\Http\Controllers\Controller;
+use App\Models\Project;
+use App\Models\Tag;
+use App\Models\Subject;
+use App\Models\Course;
+use App\Models\Algorithm;
+use App\Models\University;
+use App\Models\College;
+use App\Models\Team;
+use App\Models\ProjectFile;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+class ProjectController extends Controller
+{
+    /**
+     * Display a listing of the user's projects.
+     */
+    public function index(Request $request)
+    {
+        $query = Project::where('created_by', auth()->id());
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $projects = $query->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('client.projects.index', compact('projects'));
+    }
+
+    /**
+     * Show the form for creating a new project.
+     */
+    public function create()
+    {
+        $tags = Tag::where('status', true)->get();
+        $courses = Course::where('status', true)->get();
+        $algorithms = Algorithm::where('status', true)->get();
+        $universities = University::where('status', true)->get();
+        $colleges = College::where('status', true)->get();
+        $teams = Team::all();
+
+        return view('client.projects.create', compact('tags', 'courses', 'algorithms', 'universities', 'colleges', 'teams'));
+    }
+
+    /**
+     * Store a newly created project in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'github_url' => 'nullable|url',
+            'live_demo_url' => 'nullable|url',
+            'image' => 'nullable|image|max:2048',
+            'course_id' => 'required|exists:courses,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+            'algorithms' => 'nullable|array',
+            'algorithms.*' => 'exists:algorithms,id',
+            'teams' => 'nullable|array',
+            'teams.*' => 'exists:teams,id',
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:10240', // 10MB limit per file
+        ]);
+
+        $project = new Project();
+        $project->name = $request->name;
+        $project->slug = Str::slug($request->name) . '-' . time();
+        $project->description = $request->description;
+        $project->github_url = $request->github_url;
+        $project->live_demo_url = $request->live_demo_url;
+        $project->course_id = $request->course_id;
+        $project->subject_id = $request->subject_id;
+        $project->is_private = $request->has('is_private');
+        $project->created_by = auth()->id();
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('projects', 'public');
+            $project->image = $path;
+        }
+
+        $project->save();
+
+        // Handle Tags
+        if ($request->tags) {
+            $project->tags()->sync($request->tags);
+        }
+
+        // Handle Algorithms
+        if ($request->algorithms) {
+            $project->algorithms()->sync($request->algorithms);
+        }
+
+        // Handle Teams
+        if ($request->teams) {
+            $project->teams()->sync($request->teams);
+        }
+
+        // Handle Multiple Project Files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('project_files', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'created_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        return redirect()->route('client.projects.index')->with('success', 'Project submitted successfully!');
+    }
+
+    /**
+     * Show the form for editing the specified project.
+     */
+    public function edit($id)
+    {
+        $project = Project::with(['tags', 'algorithms', 'teams', 'files'])
+            ->where('id', $id)
+            ->where('created_by', auth()->id())
+            ->firstOrFail();
+
+        $tags = Tag::where('status', true)->get();
+        $courses = Course::where('status', true)->get();
+        $subjects = Subject::where('course_id', $project->course_id)->get();
+        $algorithms = Algorithm::where('status', true)->get();
+        $universities = University::where('status', true)->get();
+        $colleges = College::where('status', true)->get();
+        $teams = Team::all();
+
+        return view('client.projects.edit', compact('project', 'tags', 'courses', 'subjects', 'algorithms', 'universities', 'colleges', 'teams'));
+    }
+
+    /**
+     * Update the specified project in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $project = Project::where('id', $id)
+            ->where('created_by', auth()->id())
+            ->firstOrFail();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'github_url' => 'nullable|url',
+            'live_demo_url' => 'nullable|url',
+            'image' => 'nullable|image|max:2048',
+            'course_id' => 'required|exists:courses,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+            'algorithms' => 'nullable|array',
+            'algorithms.*' => 'exists:algorithms,id',
+            'teams' => 'nullable|array',
+            'teams.*' => 'exists:teams,id',
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:10240',
+        ]);
+
+        $project->name = $request->name;
+        $project->description = $request->description;
+        $project->github_url = $request->github_url;
+        $project->live_demo_url = $request->live_demo_url;
+        $project->course_id = $request->course_id;
+        $project->subject_id = $request->subject_id;
+        $project->is_private = $request->has('is_private');
+
+        if ($request->hasFile('image')) {
+            if ($project->image) {
+                Storage::disk('public')->delete($project->image);
+            }
+            $path = $request->file('image')->store('projects', 'public');
+            $project->image = $path;
+        }
+
+        $project->save();
+
+        // Sync Relations
+        $project->tags()->sync($request->tags ?? []);
+        $project->algorithms()->sync($request->algorithms ?? []);
+        $project->teams()->sync($request->teams ?? []);
+
+        // Handle New Files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('project_files', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        // Handle File Deletion (if any passed)
+        if ($request->delete_files) {
+            foreach ($request->delete_files as $fileId) {
+                $file = ProjectFile::where('id', $fileId)->where('project_id', $project->id)->first();
+                if ($file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+            }
+        }
+
+        return redirect()->route('client.projects.index')->with('success', 'Project updated successfully!');
+    }
+
+    /**
+     * Remove the specified project from storage.
+     */
+    public function destroy($id)
+    {
+        $project = Project::where('id', $id)
+            ->where('created_by', auth()->id())
+            ->firstOrFail();
+
+        // Delete Image
+        if ($project->image) {
+            Storage::disk('public')->delete($project->image);
+        }
+
+        // Delete Files
+        foreach ($project->files as $file) {
+            Storage::disk('public')->delete($file->file_path);
+            $file->delete();
+        }
+
+        $project->delete();
+
+        return redirect()->route('client.projects.index')->with('success', 'Project deleted successfully!');
+    }
+
+    public function getSubjects($course_id)
+    {
+        $subjects = Subject::where('course_id', $course_id)->get(['id', 'name']);
+        return response()->json($subjects);
+    }
+}

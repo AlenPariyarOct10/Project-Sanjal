@@ -12,10 +12,7 @@
     <!-- Main Content -->
     <main>
         <section class="admin-container">
-            <!-- Universities Section -->
-
             <div class="admin-section">
-
                 @component('components.admin-datatable', [
                     'table_id' => $table_id,
                     'module' => $module,
@@ -27,9 +24,6 @@
                 ])
                 @endcomponent
             </div>
-            <a class="btn" id="add{{$module}}Btn">Algorithm Tags</a>
-            <a class="btn" id="add{{$module}}Btn">Algorithm Categories</a>
-
         </section>
     </main>
 
@@ -42,44 +36,44 @@
 
             <form id="{{module_id($module, "form")}}" onsubmit="handle{{$module}}Submit(event)" enctype="multipart/form-data">
                 <input type="hidden" id="{{module_id($module, "id")}}" name="id">
+                
+                <!-- Type -->
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "type")}}" class="block font-medium required">Category Type</label>
+                    <input type="text" id="{{module_id($module, "type")}}" name="type" class="w-full px-3 py-2 border " placeholder="e.g. Design Approach">
+                </div>
+
                 <!-- Name -->
                 <div class="form-group mb-3">
-                    <label for="{{module_id($module, "name")}}" class="block font-medium required">{{$module}} Name</label>
-                    <input type="text" id="{{module_id($module, "name")}}" name="name" class="w-full px-3 py-2 border ">
+                    <label for="{{module_id($module, "name")}}" class="block font-medium required">Category Name</label>
+                    <input type="text" id="{{module_id($module, "name")}}" name="name" class="w-full px-3 py-2 border " placeholder="e.g. Divide and Conquer">
                 </div>
 
                 <!-- Description -->
                 <div class="form-group mb-3">
                     <label for="{{module_id($module, "description")}}" class="block font-medium">Description</label>
                     <textarea id="{{module_id($module, "description")}}" name="description" rows="3" class="w-full px-3 py-2 border "
-                              placeholder="About the {{$module}}"></textarea>
+                              placeholder="About this category"></textarea>
                 </div>
 
-                <!-- Resource URL -->
+                <!-- Status -->
                 <div class="form-group mb-3">
-                    <label for="{{module_id($module, "resource_url")}}" class="block font-medium">Resource URL</label>
-                    <input type="text" id="{{module_id($module, "resource_url")}}" name="resource_url" class="w-full px-3 py-2 border ">
-                </div>
-
-                <!-- image -->
-                <div class="form-group mb-3">
-                    <label for="{{module_id($module, "image")}}" class="block font-medium">Image</label>
-                    <input type="file" id="{{module_id($module, "image")}}" name="image" accept="image/*" class="w-full">
-                    <img id="imagePreview" src="" alt="Image Preview" class="mt-2 max-h-20 hidden border p-1">
+                    <label for="{{module_id($module, "status")}}" class="block font-medium">Status</label>
+                    <select id="{{module_id($module, "status")}}" name="status" class="w-full px-3 py-2 border">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
                 </div>
 
                 <!-- Actions -->
                 <div class="form-group flex justify-end gap-3 mt-4">
                     <button type="button" class="btn btn-outline px-4 py-2" onclick="close{{$module}}Modal()">Cancel
                     </button>
-                    <button type="submit" class="btn px-4 py-2">Add {{$module}}</button>
+                    <button type="submit" class="btn px-4 py-2">Save {{$module}}</button>
                 </div>
             </form>
         </div>
     </div>
-
-
-
 @endsection
 
 @section("js")
@@ -87,5 +81,5 @@
     <script src="{{asset('js/data-table.min.js')}}"></script>
     <script src="{{asset('plugin/dataTables.scroller.min.js')}}"></script>
     @include("admin.includes.admin_index_script")
-    @include("admin.algorithms.includes.script")
+    @include("admin.algorithm_categories.includes.script")
 @endsection

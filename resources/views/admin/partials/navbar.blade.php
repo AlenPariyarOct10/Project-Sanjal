@@ -6,6 +6,8 @@
             <li><a class="{{ Route::is('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">Users</a></li>
             <li><a class="{{ Route::is('admin.algorithms.*') ? 'active' : '' }}" href="{{ route('admin.algorithms.index') }}">Algorithms</a></li>
             <li><a class="{{ Route::is('admin.colleges.*') ? 'active' : '' }}" href="{{ route('admin.colleges.index') }}">Colleges</a></li>
+            <li><a class="{{ Route::is('admin.courses.*') ? 'active' : '' }}" href="{{ route('admin.courses.index') }}">Courses</a></li>
+            <li><a class="{{ Route::is('admin.subjects.*') ? 'active' : '' }}" href="{{ route('admin.subjects.index') }}">Subjects</a></li>
             <li><a class="{{ Route::is('admin.universities.*') ? 'active' : '' }}" href="{{ route('admin.universities.index') }}">Universities</a></li>
             <li>
                 <form method="POST" action="{{ route('admin.logout') }}">

@@ -131,6 +131,7 @@
                             });
                         }
                     }
+                    return;
                 }
 
                 const data = await response.json();

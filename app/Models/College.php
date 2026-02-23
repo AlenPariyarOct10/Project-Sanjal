@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class College extends Model
 {
-
-use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'colleges';
     protected $fillable = [
@@ -24,12 +23,19 @@ use SoftDeletes;
         'youtube',
         'linkedin',
         'description',
+        'university_id',
         'user_id',
+        'status',
     ];
+
+    public function university()
+    {
+        return $this->belongsTo(University::class);
+    }
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class , 'user_id');
     }
 
     public function users()
