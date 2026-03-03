@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Projects - Nepal IT Project Hub</title>
+    <title>Browse Projects - ProjectSanjal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
@@ -14,13 +14,20 @@
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
                 <a href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">N</div>
-                    <span>Nepal IT Project Hub</span>
+                    
+                    
+                    @if($system_logo)
+                        <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
+                    @else
+                        <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">{{ substr($system_name, 0, 1) }}</div>
+                    @endif
+                    <span>{{ $system_name }}</span>
                 </a>
             </div>
             <ul class="hidden md:flex gap-6 list-none items-center" id="navLinks">
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-black font-semibold text-sm underline">Browse Projects</a></li>
+                <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Colleges</a></li>
                 
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
@@ -49,6 +56,7 @@
         <ul class="flex flex-col gap-4 list-none">
             <li><a href="/" class="text-gray-600 font-medium text-sm">Home</a></li>
             <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm">Browse Projects</a></li>
+            <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm">Colleges</a></li>
             @if(auth()->check())
                 <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm">Dashboard</a></li>
                 <li><a href="{{ route('client.projects.create') }}" class="bg-black text-white font-semibold px-4 py-2 inline-block">Submit Project</a></li>
@@ -63,17 +71,85 @@
 <!-- Main Content -->
 <main class="py-12 md:py-16">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <div>
+        <div class="mb-10">
+            <div class="mb-6">
                 <h1 class="text-4xl font-bold mb-2">Explore Projects</h1>
                 <p class="text-gray-600">Discover innovative projects built by IT students across Nepal.</p>
             </div>
-            <div class="w-full md:w-auto">
-                <form action="{{ route('projects.index') }}" method="GET" class="flex gap-2">
-                    <input type="text" name="search" placeholder="Search projects..." value="{{ request('search') }}" class="px-4 py-2 border border-gray-300 focus:outline-none focus:border-black w-full md:w-64">
-                    <button type="submit" class="bg-black text-white px-4 py-2 font-semibold">Search</button>
-                </form>
-            </div>
+
+            <form action="{{ route('projects.index') }}" method="GET" class="bg-white p-6 border border-gray-200 shadow-sm rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <div class="col-span-1 md:col-span-2 lg:col-span-4 flex gap-2">
+                        <input type="text" name="search" placeholder="Search projects by name or description..." value="{{ request('search') }}" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-black">
+                        <button type="submit" class="bg-black text-white px-8 py-3 font-semibold rounded hover:bg-gray-800 transition">Search</button>
+                    </div>
+                
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Course</label>
+                        <select name="course" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">All Courses</option>
+                            @foreach($courses as $course)
+                                <option value="{{ $course->id }}" {{ request('course') == $course->id ? 'selected' : '' }}>{{ $course->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Subject</label>
+                        <select name="subject" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">All Subjects</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->id }}" {{ request('subject') == $subject->id ? 'selected' : '' }}>{{ $subject->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">College</label>
+                        <select name="college" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">All Colleges</option>
+                            @foreach($colleges as $college)
+                                <option value="{{ $college->id }}" {{ request('college') == $college->id ? 'selected' : '' }}>{{ $college->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tag</label>
+                        <select name="tag" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">All Tags</option>
+                            @foreach($tags as $tag)
+                                <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>{{ $tag->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Algorithm</label>
+                        <select name="algorithm" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">All Algorithms</option>
+                            @foreach($algorithms as $algorithm)
+                                <option value="{{ $algorithm->id }}" {{ request('algorithm') == $algorithm->id ? 'selected' : '' }}>{{ $algorithm->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Sort By</label>
+                        <select name="sort" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
+                            <option value="">Latest (Default)</option>
+                            <option value="likes" {{ request('sort') == 'likes' ? 'selected' : '' }}>Most Liked</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-1 md:col-span-2 lg:col-span-2 flex justify-end items-end gap-2">
+                        @if(request()->anyFilled(['search', 'course', 'subject', 'college', 'tag', 'algorithm', 'sort']))
+                            <a href="{{ route('projects.index') }}" class="text-sm text-gray-500 hover:text-black hover:underline py-2 px-3">Clear</a>
+                        @endif
+                        <button type="submit" class="bg-gray-100 text-gray-800 border border-gray-300 hover:bg-gray-200 px-6 py-2 font-semibold rounded transition text-sm">Apply Filters</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         @if($projects->isEmpty())
@@ -94,7 +170,16 @@
                             @endif
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{{ $project->name }}</h3>
+                            <h3 class="text-xl font-bold mb-1 group-hover:text-blue-600 transition-colors">{{ $project->name }}</h3>
+                            
+                            <div class="mb-3 text-xs text-gray-400 font-medium">
+                                @if($project->user)
+                                    By <a href="{{ route('users.show', $project->user->id) }}" class="text-gray-600 hover:text-black hover:underline transition">{{ $project->user->name }}</a>
+                                @else
+                                    By <span class="text-gray-600">Anonymous</span>
+                                @endif
+                            </div>
+
                             <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $project->description }}</p>
                             
                             <div class="flex flex-wrap gap-2 mb-6">
@@ -133,7 +218,13 @@
             <div class="col-span-1 md:col-span-2">
                 <div class="flex items-center gap-2 font-bold text-2xl mb-6">
                     <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">N</div>
-                    <span>Nepal IT Project Hub</span>
+                    
+                    @if($system_logo)
+                        <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
+                    @else
+                        <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">{{ substr($system_name, 0, 1) }}</div>
+                    @endif
+                    <span>{{ $system_name }}</span>
                 </div>
                 <p class="text-gray-400 text-lg leading-relaxed max-w-md">Bridging the gap between academic learning and industry visibility for the next generation of Nepalese developers.</p>
             </div>
@@ -154,7 +245,7 @@
             </div>
         </div>
         <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-4">
-            <p>&copy; {{ date('Y') }} Nepal IT Project Hub. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} ProjectSanjal. All rights reserved.</p>
             <div class="flex gap-6">
                 <a href="#" class="hover:text-white">Privacy Policy</a>
                 <a href="#" class="hover:text-white">Terms of Service</a>

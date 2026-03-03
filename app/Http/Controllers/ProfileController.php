@@ -9,16 +9,26 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use App\Models\College;
 
 class ProfileController extends Controller
 {
+    /**
+     * Get the authenticated user from whichever guard is active.
+     */
+    private function getUser(Request $request)
+    {
+        return Auth::guard('client')->user() ?? Auth::guard('web')->user() ?? $request->user();
+    }
+
     /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $this->getUser($request),
+            'colleges' => College::orderBy('name')->get(),
         ]);
     }
 
@@ -27,7 +37,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
+        $user = $this->getUser($request);
         $user->fill($request->validated());
 
         if ($request->hasFile('profile_image')) {
@@ -56,9 +66,15 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
+        $user = $this->getUser($request);
 
-        Auth::logout();
+        // Log out from whichever guard is active
+        if (Auth::guard('client')->check()) {
+            Auth::guard('client')->logout();
+        }
+        else {
+            Auth::logout();
+        }
 
         $user->delete();
 

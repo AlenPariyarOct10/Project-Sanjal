@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nepal IT Project Hub - Share & Collaborate IT Projects</title>
+    <title>ProjectSanjal - Share & Collaborate IT Projects</title>
     <script src="https://cdn.tailwindcss.com"></script>
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
@@ -13,12 +13,19 @@
     <div class="max-w-6xl mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
-                <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">N</div>
-                <span>Nepal IT Project Hub</span>
+                <a href="/" class="flex items-center gap-2">
+                    @if($system_logo)
+                        <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-8 h-8 object-contain">
+                    @else
+                        <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">{{ substr($system_name, 0, 1) }}</div>
+                    @endif
+                    <span>{{ $system_name }}</span>
+                </a>
             </div>
             <ul class="hidden md:flex gap-6 list-none items-center" id="navLinks">
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
+                <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Colleges</a></li>
                 
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
@@ -47,6 +54,7 @@
         <ul class="flex flex-col gap-4 list-none">
             <li><a href="/" class="text-gray-600 font-medium text-sm">Home</a></li>
             <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm">Browse Projects</a></li>
+            <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm">Colleges</a></li>
             @if(auth()->check())
                 <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm">Dashboard</a></li>
                 <li><a href="{{ route('client.projects.create') }}" class="bg-black text-white font-semibold px-4 py-2 inline-block">Submit Project</a></li>
@@ -144,13 +152,13 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($top_colleges as $college)
-                <div class="bg-white border border-gray-100 p-8 text-center hover:border-black hover:shadow-xl transition-all duration-300">
-                    <div class="w-24 h-24 bg-gray-50 mx-auto mb-6 flex items-center justify-center text-4xl font-black text-black border-2 border-gray-100 rounded-full">
+                <a href="{{ route('colleges.show', $college->id) }}" class="block bg-white border border-gray-100 p-8 text-center hover:border-black hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-24 h-24 bg-gray-50 mx-auto mb-6 flex items-center justify-center text-4xl font-black text-black border-2 border-gray-100 rounded-full group-hover:scale-105 transition-transform">
                         {{ strtoupper(substr($college->name, 0, 1)) }}
                     </div>
-                    <h3 class="text-xl font-bold mb-2">{{ $college->name }}</h3>
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{{ $college->name }}</h3>
                     <p class="text-gray-400 text-sm uppercase font-bold tracking-widest">{{ $college->users_count }} INNOVATORS</p>
-                </div>
+                </a>
             @endforeach
         </div>
     </div>
@@ -162,8 +170,12 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div class="col-span-1 md:col-span-2">
                 <div class="flex items-center gap-2 font-bold text-2xl mb-6">
-                    <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">N</div>
-                    <span>Nepal IT Project Hub</span>
+                    @if($system_logo)
+                        <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
+                    @else
+                        <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">{{ substr($system_name, 0, 1) }}</div>
+                    @endif
+                    <span>{{ $system_name }}</span>
                 </div>
                 <p class="text-gray-400 text-lg leading-relaxed max-w-md">Bridging the gap between academic learning and industry visibility for the next generation of Nepalese developers.</p>
             </div>
@@ -184,7 +196,7 @@
             </div>
         </div>
         <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-4">
-            <p>&copy; {{ date('Y') }} Nepal IT Project Hub. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $system_name }}. All rights reserved.</p>
             <div class="flex gap-6">
                 <a href="#" class="hover:text-white">Privacy Policy</a>
                 <a href="#" class="hover:text-white">Terms of Service</a>

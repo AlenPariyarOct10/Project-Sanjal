@@ -166,4 +166,16 @@ class CourseController extends Controller
             ]);
         }
     }
+
+    public function show(string $id)
+    {
+        try {
+            $row = Course::with(['subjects', 'university'])->findOrFail($id);
+            $base_route = $this->base_route;
+            return view('admin.courses.show', compact('row', 'base_route'));
+        }
+        catch (\Exception $e) {
+            return back()->with('error', 'Course not found!');
+        }
+    }
 }

@@ -19,12 +19,30 @@ use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
+    private function baseProjectQuery()
+    {
+        return Project::where(function ($q) {
+            $q->where('created_by', auth()->id())
+                ->orWhereHas('teams', function ($q2) {
+                $q2->where('teams.created_by', auth()->id())
+                    ->orWhereIn('teams.id', function ($sub) {
+                    $sub->select('team_id')
+                        ->from('team_members')
+                        ->where('user_id', auth()->id())
+                        ->where('status', 'approved');
+                }
+                );
+            }
+            );
+        });
+    }
+
     /**
      * Display a listing of the user's projects.
      */
     public function index(Request $request)
     {
-        $query = Project::where('created_by', auth()->id());
+        $query = $this->baseProjectQuery();
 
         if ($request->filled('search')) {
             $searchTerm = $request->input('search');
@@ -51,7 +69,7 @@ class ProjectController extends Controller
         $algorithms = Algorithm::where('status', true)->get();
         $universities = University::where('status', true)->get();
         $colleges = College::where('status', true)->get();
-        $teams = Team::all();
+        $teams = Team::where('created_by', auth()->id())->get();
 
         return view('client.projects.create', compact('tags', 'courses', 'algorithms', 'universities', 'colleges', 'teams'));
     }
@@ -129,14 +147,34 @@ class ProjectController extends Controller
         return redirect()->route('client.projects.index')->with('success', 'Project submitted successfully!');
     }
 
+    public function show($id)
+    {
+        $project = Project::with(['course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files'])
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $relatedProjects = Project::where('status', true)
+            ->where('is_private', false)
+            ->where('id', '!=', $project->id)
+            ->where(function ($q) use ($project) {
+            $q->where('course_id', $project->course_id)
+                ->orWhere('subject_id', $project->subject_id);
+        })
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('projects.show', compact('project', 'relatedProjects'));
+    }
+
     /**
      * Show the form for editing the specified project.
      */
     public function edit($id)
     {
-        $project = Project::with(['tags', 'algorithms', 'teams', 'files'])
+        $project = $this->baseProjectQuery()
+            ->with(['tags', 'algorithms', 'teams', 'files'])
             ->where('id', $id)
-            ->where('created_by', auth()->id())
             ->firstOrFail();
 
         $tags = Tag::where('status', true)->get();
@@ -145,7 +183,7 @@ class ProjectController extends Controller
         $algorithms = Algorithm::where('status', true)->get();
         $universities = University::where('status', true)->get();
         $colleges = College::where('status', true)->get();
-        $teams = Team::all();
+        $teams = Team::where('created_by', auth()->id())->get();
 
         return view('client.projects.edit', compact('project', 'tags', 'courses', 'subjects', 'algorithms', 'universities', 'colleges', 'teams'));
     }
@@ -155,8 +193,8 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $project = Project::where('id', $id)
-            ->where('created_by', auth()->id())
+        $project = $this->baseProjectQuery()
+            ->where('id', $id)
             ->firstOrFail();
 
         $request->validate([

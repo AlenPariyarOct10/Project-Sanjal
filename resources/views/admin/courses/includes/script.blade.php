@@ -1,6 +1,5 @@
 <script>
     function openEditCourseModal(id) {
-        let moduleId = "{{ strtolower($module) }}";
         let editUrl = "{{ route($base_route . 'edit', ':id') }}".replace(':id', id);
 
         fetch(editUrl)
@@ -8,16 +7,16 @@
             .then(response => {
                 if (response.status === 'success') {
                     let data = response.data;
-                    document.getElementById(moduleId + "Id").value = data.id;
-                    document.getElementById(moduleId + "Name").value = data.name;
-                    document.getElementById(moduleId + "Code").value = data.code || '';
-                    document.getElementById(moduleId + "University_id").value = data.university_id;
-                    document.getElementById(moduleId + "Description").value = data.description || '';
-                    document.getElementById(moduleId + "Status").value = data.status;
+                    document.getElementById("{{module_id($module, "id")}}").value = data.id;
+                    document.getElementById("{{module_id($module, "name")}}").value = data.name;
+                    document.getElementById("{{module_id($module, "code")}}").value = data.code || '';
+                    document.getElementById("{{module_id($module, "university_id")}}").value = data.university_id;
+                    document.getElementById("{{module_id($module, "description")}}").value = data.description || '';
+                    document.getElementById("{{module_id($module, "status")}}").value = data.status;
 
-                    document.querySelector("#" + moduleId + "Modal h2").innerText = "Edit Course";
-                    document.querySelector("#" + moduleId + "Modal button[type='submit']").innerText = "Update Course";
-                    openModal(moduleId + "Modal");
+                    document.querySelector("#{{module_id($module, "modal")}} h2").innerText = "Edit {{$module}}";
+                    document.querySelector("#{{module_id($module, "modal")}} button[type='submit']").innerText = "Update {{$module}}";
+                    openModal("{{module_id($module, "modal")}}");
                 } else {
                     alert(response.message);
                 }

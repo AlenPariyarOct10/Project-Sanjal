@@ -218,4 +218,16 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function show(string $id)
+    {
+        try {
+            $row = User::with(['role', 'college'])->findOrFail($id);
+            $base_route = $this->base_route;
+            return view('admin.users.show', compact('row', 'base_route'));
+        }
+        catch (\Exception $e) {
+            return back()->with('error', 'User not found!');
+        }
+    }
 }

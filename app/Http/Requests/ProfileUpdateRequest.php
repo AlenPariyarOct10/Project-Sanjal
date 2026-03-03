@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
@@ -23,7 +24,9 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->ignore(
+                (Auth::guard('client')->user() ?? Auth::guard('web')->user())->id
+            ),
             ],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
@@ -39,6 +42,7 @@ class ProfileUpdateRequest extends FormRequest
             'youtube' => ['nullable', 'url', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'profile_image' => ['nullable', 'image', 'max:2048'],
+            'college_id' => ['nullable', 'exists:colleges,id'],
         ];
     }
 }

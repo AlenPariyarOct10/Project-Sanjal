@@ -47,10 +47,16 @@
                                placeholder="e.g., system_name">
                     </div>
                     <div>
-                        <label for="{{module_id($module, "value")}}" class="block font-medium">Value</label>
-                        <input type="value" id="{{module_id($module, "value")}}" name="value" class="w-full px-3 py-2 border "
+                        <label for="{{module_id($module, "value")}}" class="block font-medium">Text Value</label>
+                        <input type="text" id="{{module_id($module, "value")}}" name="value" class="w-full px-3 py-2 border "
                                placeholder="e.g., ProjectSanjal">
                     </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{module_id($module, "file_value")}}" class="block font-medium">Image Value (Optional)</label>
+                    <input type="file" id="{{module_id($module, "file_value")}}" name="file_value" class="w-full px-3 py-2 border">
+                    <p class="text-xs text-gray-500 mt-1">If this is a logo or image, upload it here instead of passing a text value.</p>
                 </div>
 
                 <!-- Status -->

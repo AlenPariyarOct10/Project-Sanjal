@@ -1,4 +1,4 @@
-// // Nepal IT Project Hub - Main JavaScript Module
+// // ProjectSanjal - Main JavaScript Module
 //
 // // Mock Data
 // const mockData = {

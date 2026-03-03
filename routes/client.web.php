@@ -27,6 +27,17 @@ Route::prefix('client')->name('client.')->group(function () {
             // Projects CRUD
             Route::resource('projects', \App\Http\Controllers\Client\ProjectController::class);
             Route::get('/courses/{course_id}/subjects', [\App\Http\Controllers\Client\ProjectController::class , 'getSubjects'])->name('courses.subjects');
+
+            // Teams CRUD
+            Route::resource('teams', \App\Http\Controllers\Client\TeamController::class);
+
+            // Team Members
+            Route::post('teams/{team}/members', [\App\Http\Controllers\Client\TeamMemberController::class , 'store'])->name('teams.members.store');
+            Route::delete('teams/{team}/members/{member}', [\App\Http\Controllers\Client\TeamMemberController::class , 'destroy'])->name('teams.members.destroy');
+
+            // Team Invitations (for the invited user)
+            Route::get('invitations', [\App\Http\Controllers\Client\TeamMemberController::class , 'invitations'])->name('invitations.index');
+            Route::put('invitations/{invitation}', [\App\Http\Controllers\Client\TeamMemberController::class , 'updateStatus'])->name('invitations.update');
         }
         );
     });

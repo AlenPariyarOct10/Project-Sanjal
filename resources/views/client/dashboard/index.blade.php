@@ -147,7 +147,10 @@
                             
                             <div class="flex justify-between items-center text-sm pt-2 border-t border-gray-50">
                                 <span class="text-gray-500">Member Since</span>
-                                <span class="font-bold text-gray-900">{{ auth()->user()->created_at->format('M Y') }}</span>
+                                @php
+                                    $user = auth('client')->user() ?? auth()->user();
+                                @endphp
+                                <span class="font-bold text-gray-900">{{ $user->created_at->format('M Y') }}</span>
                             </div>
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-gray-500">Account Status</span>

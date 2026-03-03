@@ -3,13 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Algorithm extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'algorithms';
     protected $fillable = [
-        'name', 'slug', 'description', 'image', 'resource_url', 'key', 'status', 'deleted_at'
+        'name', 'slug', 'description', 'image', 'resource_url', 'key', 'status',
     ];
+
+    // ---- Relationships ----
 
     public function projects()
     {

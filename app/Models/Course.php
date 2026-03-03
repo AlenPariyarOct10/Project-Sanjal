@@ -3,19 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
-    protected $fillable = ['name', 'key', 'status', 'code', 'description', 'created_by', 'updated_by', 'university_id', 'deleted_at', 'created_at', 'updated_at' ];
+    use SoftDeletes;
 
-    // Relationship: Course has many subjects
+    protected $fillable = [
+        'name', 'key', 'status', 'code', 'description',
+        'created_by', 'updated_by', 'university_id',
+    ];
+
+    // ---- Relationships ----
+
+    public function university()
+    {
+        return $this->belongsTo(University::class);
+    }
+
     public function subjects()
     {
         return $this->hasMany(Subject::class);
     }
 
-    public function university()
+    public function projects()
     {
-        return $this->belongsTo(University::class);
+        return $this->hasMany(Project::class);
     }
 }

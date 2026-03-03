@@ -1,6 +1,5 @@
 <script>
     function openEditAlgorithmModal(id) {
-        let moduleId = "{{ strtolower($module) }}";
         let editUrl = "{{ route($base_route . 'edit', ':id') }}".replace(':id', id);
 
         fetch(editUrl)
@@ -8,11 +7,11 @@
             .then(response => {
                 if (response.status === 'success') {
                     let data = response.data;
-                    document.getElementById(moduleId + "Id").value = data.id;
-                    document.getElementById(moduleId + "Name").value = data.name;
-                    document.getElementById(moduleId + "Description").value = data.description || '';
-                    document.getElementById(moduleId + "Resource_url").value = data.resource_url || '';
-                    document.getElementById(moduleId + "Status").value = data.status;
+                    document.getElementById("{{module_id($module, "id")}}").value = data.id;
+                    document.getElementById("{{module_id($module, "name")}}").value = data.name;
+                    document.getElementById("{{module_id($module, "description")}}").value = data.description || '';
+                    document.getElementById("{{module_id($module, "resource_url")}}").value = data.resource_url || '';
+                    document.getElementById("{{module_id($module, "status")}}").value = data.status;
 
                     // Clear and set categories
                     document.querySelectorAll(".category-checkbox").forEach(cb => cb.checked = false);
@@ -40,9 +39,9 @@
                         document.getElementById("imagePreview").classList.add("hidden");
                     }
 
-                    document.querySelector("#" + moduleId + "Modal h2").innerText = "Edit Algorithm";
-                    document.querySelector("#" + moduleId + "Modal button[type='submit']").innerText = "Update Algorithm";
-                    openModal(moduleId + "Modal");
+                    document.querySelector("#{{module_id($module, "modal")}} h2").innerText = "Edit {{$module}}";
+                    document.querySelector("#{{module_id($module, "modal")}} button[type='submit']").innerText = "Update {{$module}}";
+                    openModal("{{module_id($module, "modal")}}");
                 } else {
                     alert(response.message);
                 }

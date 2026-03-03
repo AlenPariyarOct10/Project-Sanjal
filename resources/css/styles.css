@@ -1,15 +1,33 @@
-/* Nepal IT Project Hub - Minimalistic Monochrome Theme */
+/* ProjectSanjal - Minimalistic Monochrome Theme */
 /* Sharp corners, flat design, system fonts, monochrome only */
+/* Supports dark mode via class="dark" on <html> */
 
 :root {
   /* Monochrome + Black Color Palette */
   --bg: #ffffff;
+  --bg-secondary: #f9fafb;
   --text: #222222;
   --subtext: #555555;
   --border: #dddddd;
   --gray-light: #f5f5f5;
   --gray-dark: #333333;
   --primary: #000000;
+  --primary-hover: #1a1a1a;
+  --input-bg: #ffffff;
+  --card-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --table-header-bg: #f5f5f5;
+  --table-row-hover: #f5f5f5;
+  --table-border: #e5e7eb;
+  --badge-active-bg: #dcfce7;
+  --badge-active-border: #22c55e;
+  --badge-active-text: #166534;
+  --badge-inactive-bg: #fee2e2;
+  --badge-inactive-border: #ef4444;
+  --badge-inactive-text: #991b1b;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
 
   /* Spacing Scale */
   --sp-4: 4px;
@@ -24,6 +42,34 @@
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
+/* Dark Mode Variables */
+html.dark {
+  --bg: #111827;
+  --bg-secondary: #1f2937;
+  --text: #f3f4f6;
+  --subtext: #9ca3af;
+  --border: #374151;
+  --gray-light: #1f2937;
+  --gray-dark: #e5e7eb;
+  --primary: #ffffff;
+  --primary-hover: #e5e7eb;
+  --input-bg: #1f2937;
+  --card-bg: #1f2937;
+  --modal-bg: #1f2937;
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --table-header-bg: #1f2937;
+  --table-row-hover: #374151;
+  --table-border: #374151;
+  --badge-active-bg: #064e3b;
+  --badge-active-border: #10b981;
+  --badge-active-text: #6ee7b7;
+  --badge-inactive-bg: #7f1d1d;
+  --badge-inactive-border: #f87171;
+  --badge-inactive-text: #fca5a5;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -36,6 +82,7 @@ body {
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* Typography */
@@ -43,18 +90,21 @@ h1 {
   font-size: 48px;
   font-weight: 700;
   margin-bottom: var(--sp-16);
+  color: var(--text);
 }
 
 h2 {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: var(--sp-16);
+  color: var(--text);
 }
 
 h3 {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: var(--sp-12);
+  color: var(--text);
 }
 
 h4,
@@ -63,6 +113,7 @@ h6 {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: var(--sp-12);
+  color: var(--text);
 }
 
 p {
@@ -138,6 +189,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: background-color 0.2s;
 }
 
 .navbar {
@@ -163,9 +215,11 @@ header {
   color: var(--subtext);
   font-weight: 500;
   font-size: 14px;
+  transition: color 0.2s;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a.active {
   color: var(--primary);
   text-decoration: underline;
 }
@@ -183,6 +237,7 @@ header {
   width: 24px;
   height: 2px;
   background-color: var(--text);
+  transition: background-color 0.2s;
 }
 
 /* Buttons */
@@ -192,20 +247,20 @@ header {
   font-weight: 600;
   border: 1px solid var(--primary);
   background-color: var(--primary);
-  color: white;
+  color: var(--bg);
   cursor: pointer;
   font-family: var(--font-family);
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .btn:hover {
-  background-color: var(--gray-dark);
+  background-color: var(--primary-hover);
 }
 
 .btn-outline {
   background-color: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
+  border: 1px solid var(--border);
+  color: var(--text);
 }
 
 .btn-outline:hover {
@@ -229,10 +284,10 @@ header {
 
 /* Cards */
 .card {
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   padding: var(--sp-24);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .card:hover {
@@ -286,9 +341,9 @@ select {
   font-size: 16px;
   border: 1px solid var(--border);
   font-family: var(--font-family);
-  background-color: var(--bg);
+  background-color: var(--input-bg);
   color: var(--text);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 
 input:focus,
@@ -303,8 +358,14 @@ textarea {
   min-height: 120px;
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: var(--subtext);
+}
+
+select option {
+  background-color: var(--input-bg);
+  color: var(--text);
 }
 
 /* Tags */
@@ -328,7 +389,7 @@ input::placeholder {
 
 .chip {
   padding: var(--sp-16);
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.2s;
@@ -343,7 +404,7 @@ input::placeholder {
 
 .chip.active {
   background-color: var(--primary);
-  color: white;
+  color: var(--bg);
   border-color: var(--primary);
 }
 
@@ -390,9 +451,15 @@ section {
 /* Footer */
 footer {
   background-color: var(--gray-dark);
-  color: white;
+  color: var(--bg);
   padding: var(--sp-32) 0 var(--sp-24);
   margin-top: var(--sp-48);
+  transition: background-color 0.2s;
+}
+
+html.dark footer {
+  background-color: #0f172a;
+  border-top: 1px solid var(--border);
 }
 
 .footer-content {
@@ -403,7 +470,7 @@ footer {
 }
 
 .footer-section h4 {
-  color: white;
+  color: inherit;
   margin-bottom: var(--sp-16);
 }
 
@@ -419,8 +486,16 @@ footer {
   color: rgba(255, 255, 255, 0.7);
 }
 
+html.dark .footer-section ul li a {
+  color: var(--subtext);
+}
+
 .footer-section ul li a:hover {
   color: white;
+}
+
+html.dark .footer-section ul li a:hover {
+  color: var(--text);
 }
 
 .footer-bottom {
@@ -428,6 +503,15 @@ footer {
   padding-top: var(--sp-24);
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark .footer-bottom {
+  border-top-color: var(--border);
+  color: var(--subtext);
+}
+
+.footer-bottom p {
+  color: inherit;
 }
 
 /* Modals */
@@ -439,23 +523,45 @@ footer {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
+  transition: opacity 0.2s ease-out;
 }
 
-.modal.active {
+.modal.active,
+.modal-show {
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+}
+
+.modal-hide {
+  opacity: 0;
 }
 
 .modal-content {
-  background-color: var(--bg);
+  background-color: var(--modal-bg);
   padding: var(--sp-32);
   width: 90%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   border: 1px solid var(--border);
+  animation: fadeInUp 0.2s ease-out;
+  box-shadow: var(--shadow-md);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
@@ -473,6 +579,11 @@ footer {
   font-size: 24px;
   cursor: pointer;
   color: var(--subtext);
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: var(--text);
 }
 
 /* Toast Notifications */
@@ -485,7 +596,7 @@ footer {
 
 .toast {
   background-color: var(--text);
-  color: white;
+  color: var(--bg);
   padding: var(--sp-16) var(--sp-24);
   margin-bottom: var(--sp-16);
   border: 1px solid var(--border);
@@ -504,6 +615,46 @@ footer {
   color: var(--text);
 }
 
+/* Error Messages */
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+html.dark .error-message {
+  color: #fca5a5;
+}
+
+/* Alert Styles */
+.alert-error {
+  background-color: var(--badge-inactive-bg);
+  border: 1px solid var(--badge-inactive-border);
+  color: var(--badge-inactive-text);
+  padding: var(--sp-12) var(--sp-16);
+  margin-bottom: var(--sp-16);
+}
+
+/* Dark mode toggle button style */
+.dark-mode-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  padding: var(--sp-4) var(--sp-8);
+  font-size: 18px;
+  line-height: 1;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--gray-light);
+  border-color: var(--primary);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav-links {
@@ -516,6 +667,7 @@ footer {
     background-color: var(--bg);
     padding: var(--sp-16);
     border-bottom: 1px solid var(--border);
+    z-index: 99;
   }
 
   .nav-links.active {
@@ -572,4 +724,108 @@ footer {
     padding: var(--sp-4) var(--sp-12);
     font-size: 14px;
   }
+}
+
+/* ===========================
+   SweetAlert2 Dark Mode
+   =========================== */
+html.dark .swal2-popup {
+  background-color: var(--modal-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html.dark .swal2-title {
+  color: var(--text) !important;
+}
+
+html.dark .swal2-html-container {
+  color: var(--subtext) !important;
+}
+
+html.dark .swal2-confirm {
+  background-color: var(--primary) !important;
+  color: var(--bg) !important;
+}
+
+html.dark .swal2-cancel {
+  background-color: var(--gray-light) !important;
+  color: var(--text) !important;
+}
+
+/* ===========================
+   DataTable Dark Mode
+   =========================== */
+html.dark .dataTables_wrapper {
+  color: var(--text) !important;
+}
+
+html.dark table.dataTable {
+  border-color: var(--border) !important;
+}
+
+html.dark table.dataTable thead th,
+html.dark table.dataTable thead td {
+  background-color: var(--table-header-bg) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+html.dark table.dataTable tbody tr {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html.dark table.dataTable tbody tr:hover {
+  background-color: var(--table-row-hover) !important;
+}
+
+html.dark table.dataTable tbody td {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--subtext) !important;
+}
+
+html.dark .dataTables_info {
+  color: var(--subtext) !important;
+}
+
+html.dark .dataTables_paginate .paginate_button {
+  color: var(--text) !important;
+  background: var(--bg) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html.dark .dataTables_paginate .paginate_button:hover {
+  background: var(--table-row-hover) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+html.dark .dataTables_paginate .paginate_button.current {
+  background: var(--primary) !important;
+  color: var(--bg) !important;
+  border-color: var(--primary) !important;
+}
+
+html.dark .dataTables_length select,
+html.dark .dataTables_filter input {
+  background-color: var(--input-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+html.dark .dataTables_processing {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html.dark .dataTables_empty {
+  color: var(--subtext) !important;
+}
+
+/* ===========================
+   Toastify Dark Mode
+   =========================== */
+html.dark .toastify {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4) !important;
 }

@@ -1,6 +1,5 @@
 <script>
     function openEditAlgorithmTagModal(id) {
-        let moduleId = "{{ strtolower($module) }}";
         let editUrl = "{{ route($base_route . 'edit', ':id') }}".replace(':id', id);
 
         fetch(editUrl)
@@ -8,13 +7,13 @@
             .then(response => {
                 if (response.status === 'success') {
                     let data = response.data;
-                    document.getElementById(moduleId + "Id").value = data.id;
-                    document.getElementById(moduleId + "Name").value = data.name;
-                    document.getElementById(moduleId + "Status").value = data.status;
+                    document.getElementById("{{module_id($module, "id")}}").value = data.id;
+                    document.getElementById("{{module_id($module, "name")}}").value = data.name;
+                    document.getElementById("{{module_id($module, "status")}}").value = data.status;
 
-                    document.querySelector("#" + moduleId + "Modal h2").innerText = "Edit Algorithm Tag";
-                    document.querySelector("#" + moduleId + "Modal button[type='submit']").innerText = "Update Algorithm Tag";
-                    openModal(moduleId + "Modal");
+                    document.querySelector("#{{module_id($module, "modal")}} h2").innerText = "Edit {{$module}}";
+                    document.querySelector("#{{module_id($module, "modal")}} button[type='submit']").innerText = "Update {{$module}}";
+                    openModal("{{module_id($module, "modal")}}");
                 } else {
                     alert(response.message);
                 }

@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'comments';
-    protected  $fillable = ['text', 'user_id', 'project_id', 'parent_id', 'created_by', 'updated_by', 'deleted_at', 'created_at', 'updated_at'];
+    protected $fillable = ['text', 'user_id', 'project_id', 'parent_id'];
+
+    // ---- Relationships ----
 
     public function user()
     {
@@ -21,6 +26,11 @@ class Comment extends Model
 
     public function parent()
     {
-        return $this->belongsTo(Comment::class, 'parent_id');
+        return $this->belongsTo(Comment::class , 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class , 'parent_id');
     }
 }

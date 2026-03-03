@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details - Nepal IT Project Hub</title>
+    <title>Project Details - ProjectSanjal</title>
     <!-- Removed inline Tailwind config -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -13,8 +13,14 @@
     <div class="max-w-6xl mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
-                <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">N</div>
-                <span>Nepal IT Project Hub</span>
+                
+                
+                    @if($system_logo)
+                        <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
+                    @else
+                        <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">{{ substr($system_name, 0, 1) }}</div>
+                    @endif
+                    <span>{{ $system_name }}</span>
             </div>
             <ul class="hidden md:flex gap-6 list-none items-center" id="navLinks">
                 <li><a href="index.html" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
@@ -66,7 +72,7 @@
 <footer class="bg-gray-900 text-white py-8 mt-12">
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Nepal IT Project Hub. All rights reserved.</p>
+            <p>&copy; 2025 ProjectSanjal. All rights reserved.</p>
         </div>
     </div>
 </footer>

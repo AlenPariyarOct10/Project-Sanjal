@@ -25,7 +25,8 @@ class SystemInfoRequest extends FormRequest
     {
         return [
             'key' => 'required|string|max:255',
-            'value' => 'required|string|max:255',
+            'value' => 'nullable|string|max:255',
+            'file_value' => 'nullable|image|max:2048',
             'status' => 'required',
         ];
     }
@@ -34,12 +35,13 @@ class SystemInfoRequest extends FormRequest
     {
         return [
             'key.required' => 'SystemInfo key is required.',
-            'key.string'   => 'SystemInfo key must be a string.',
-            'key.max'      => 'SystemInfo key cannot exceed 255 characters.',
+            'key.string' => 'SystemInfo key must be a string.',
+            'key.max' => 'SystemInfo key cannot exceed 255 characters.',
 
-            'value.required' => 'SystemInfo value is required.',
-            'value.string'   => 'SystemInfo value must be a string.',
-            'value.max'      => 'SystemInfo value cannot exceed 255 characters.',
+            'value.string' => 'SystemInfo value must be a string.',
+            'value.max' => 'SystemInfo value cannot exceed 255 characters.',
+            'file_value.image' => 'The file must be an image.',
+            'file_value.max' => 'The image size cannot exceed 2MB.',
 
             'status.required' => 'SystemInfo status is required.',
         ];

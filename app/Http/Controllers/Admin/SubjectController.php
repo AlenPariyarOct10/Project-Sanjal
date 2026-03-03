@@ -187,4 +187,16 @@ class SubjectController extends Controller
             ]);
         }
     }
+
+    public function show(string $id)
+    {
+        try {
+            $row = Subject::with(['course', 'projects'])->findOrFail($id);
+            $base_route = $this->base_route;
+            return view('admin.subjects.show', compact('row', 'base_route'));
+        }
+        catch (\Exception $e) {
+            return back()->with('error', 'Subject not found!');
+        }
+    }
 }

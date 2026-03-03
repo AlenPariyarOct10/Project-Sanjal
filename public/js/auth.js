@@ -1,4 +1,4 @@
-// Nepal IT Project Hub - Authentication Module
+// ProjectSanjal - Authentication Module
 
 // Toast notification function
 function showToast(message, type = "success") {

@@ -6,21 +6,32 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="/" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">N</div>
-                        <span class="font-bold text-gray-900">Nepal IT Project Hub</span>
+                        @if($system_logo)
+                            <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-8 h-8 object-contain">
+                        @else
+                            <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">{{ substr($system_name, 0, 1) }}</div>
+                        @endif
+                        <span class="font-bold text-gray-900">{{ $system_name }}</span>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="url('/')">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.index')">
-                        {{ __('Browse Projects') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('client.projects.index')" :active="request()->routeIs('client.projects.*')">
                         {{ __('My Projects') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('client.teams.index')" :active="request()->routeIs('client.teams.*')">
+                        {{ __('My Teams') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('client.invitations.index')" :active="request()->routeIs('client.invitations.*')">
+                        {{ __('Invitations') }}
+                        @php
+                            $userId = auth('client')->id() ?? auth()->id();
+                            $pendingInvites = \App\Models\TeamMember::where('user_id', $userId)->where('status', 'pending')->count();
+                        @endphp
+                        @if($pendingInvites > 0)
+                            <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $pendingInvites }}</span>
+                        @endif
                     </x-nav-link>
                     <x-nav-link :href="route('client.dashboard')" :active="request()->routeIs('client.dashboard')">
                         {{ __('Dashboard') }}
@@ -32,8 +43,11 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
+                        @php
+                            $user = auth('client')->user() ?? auth('web')->user();
+                        @endphp
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ auth()->user()->name }}</div>
+                            <div>{{ $user->name ?? 'User' }}</div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -86,6 +100,19 @@
             <x-responsive-nav-link :href="route('client.projects.index')" :active="request()->routeIs('client.projects.*')">
                 {{ __('My Projects') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('client.teams.index')" :active="request()->routeIs('client.teams.*')">
+                {{ __('My Teams') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('client.invitations.index')" :active="request()->routeIs('client.invitations.*')">
+                {{ __('Invitations') }}
+                @php
+                    $userId = auth('client')->id() ?? auth()->id();
+                    $pendingInvites = \App\Models\TeamMember::where('user_id', $userId)->where('status', 'pending')->count();
+                @endphp
+                @if($pendingInvites > 0)
+                    <span class="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $pendingInvites }}</span>
+                @endif
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('client.dashboard')" :active="request()->routeIs('client.dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
@@ -94,8 +121,11 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ auth()->user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email }}</div>
+                @php
+                    $user = auth('client')->user() ?? auth('web')->user();
+                @endphp
+                <div class="font-medium text-base text-gray-800">{{ $user->name ?? 'User' }}</div>
+                <div class="font-medium text-sm text-gray-500">{{ $user->email ?? '' }}</div>
             </div>
 
             <div class="mt-3 space-y-1">

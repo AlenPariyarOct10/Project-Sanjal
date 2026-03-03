@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Details - Nepal IT Project Hub</title>
+    <title>College Details - ProjectSanjal</title>
     <!-- Added Tailwind CDN and removed custom CSS link -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -77,7 +77,7 @@
             </div>
         </div>
         <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Nepal IT Project Hub. All rights reserved.</p>
+            <p>&copy; 2025 ProjectSanjal. All rights reserved.</p>
         </div>
     </div>
 </footer>

@@ -60,6 +60,17 @@
                 </div>
 
                 <div>
+                    <x-input-label for="college_id" :value="__('Institution / College')" />
+                    <select id="college_id" name="college_id" class="mt-1 block w-full border-gray-300 focus:border-black focus:ring-black rounded-md shadow-sm">
+                        <option value="">-- Select College --</option>
+                        @foreach($colleges as $college)
+                            <option value="{{ $college->id }}" {{ old('college_id', $user->college_id) == $college->id ? 'selected' : '' }}>{{ $college->name }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error class="mt-2" :messages="$errors->get('college_id')" />
+                </div>
+
+                <div>
                     <x-input-label for="description" :value="__('Bio / Description')" />
                     <textarea id="description" name="description" class="mt-1 block w-full border-gray-300 focus:border-black focus:ring-black rounded-md shadow-sm" rows="3">{{ old('description', $user->description) }}</textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('description')" />
@@ -84,10 +95,14 @@
                     <x-input-error class="mt-2" :messages="$errors->get('address')" />
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div>
                         <x-input-label for="city" :value="__('City')" />
                         <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city', $user->city)" />
+                    </div>
+                    <div>
+                        <x-input-label for="state" :value="__('State')" />
+                        <x-text-input id="state" name="state" type="text" class="mt-1 block w-full" :value="old('state', $user->state)" />
                     </div>
                     <div>
                         <x-input-label for="country" :value="__('Country')" />
@@ -113,6 +128,28 @@
                 <div>
                     <x-input-label for="linkedin" :value="__('LinkedIn Profile')" />
                     <x-text-input id="linkedin" name="linkedin" type="url" class="mt-1 block w-full" :value="old('linkedin', $user->linkedin)" placeholder="https://linkedin.com/in/..." />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="facebook" :value="__('Facebook')" />
+                        <x-text-input id="facebook" name="facebook" type="url" class="mt-1 block w-full" :value="old('facebook', $user->facebook)" placeholder="https://facebook.com/..." />
+                    </div>
+                    <div>
+                        <x-input-label for="twitter" :value="__('Twitter')" />
+                        <x-text-input id="twitter" name="twitter" type="url" class="mt-1 block w-full" :value="old('twitter', $user->twitter)" placeholder="https://twitter.com/..." />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="instagram" :value="__('Instagram')" />
+                        <x-text-input id="instagram" name="instagram" type="url" class="mt-1 block w-full" :value="old('instagram', $user->instagram)" placeholder="https://instagram.com/..." />
+                    </div>
+                    <div>
+                        <x-input-label for="youtube" :value="__('YouTube')" />
+                        <x-text-input id="youtube" name="youtube" type="url" class="mt-1 block w-full" :value="old('youtube', $user->youtube)" placeholder="https://youtube.com/..." />
+                    </div>
                 </div>
             </div>
         </div>

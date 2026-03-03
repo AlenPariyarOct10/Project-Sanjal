@@ -1,4 +1,5 @@
 /* Admin Dashboard Styles - Minimalistic Monochrome Theme */
+/* Full dark mode support via CSS variables */
 
 .admin-container {
   max-width: 1400px;
@@ -15,8 +16,10 @@
   padding-bottom: var(--sp-24);
 }
 
-.admin-header h1 {
+.admin-header h1,
+.admin-header h2 {
   margin-bottom: var(--sp-8);
+  color: var(--text);
 }
 
 .admin-header p {
@@ -33,10 +36,17 @@
 }
 
 .stat-card {
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   padding: var(--sp-24);
   text-align: center;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-label {
@@ -73,9 +83,10 @@
   min-width: 200px;
   padding: var(--sp-8) var(--sp-16);
   border: 1px solid var(--border);
-  background-color: var(--bg);
+  background-color: var(--input-bg);
   color: var(--text);
   font-size: 14px;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .admin-search:focus {
@@ -83,13 +94,18 @@
   border-color: var(--primary);
 }
 
+.admin-search::placeholder {
+  color: var(--subtext);
+}
+
 .admin-filter {
   padding: var(--sp-8) var(--sp-16);
   border: 1px solid var(--border);
-  background-color: var(--bg);
+  background-color: var(--input-bg);
   color: var(--text);
   font-size: 14px;
   min-width: 150px;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .admin-filter:focus {
@@ -107,11 +123,11 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--bg);
+  background-color: var(--card-bg);
 }
 
 .admin-table thead {
-  background-color: var(--gray-light);
+  background-color: var(--table-header-bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -132,8 +148,12 @@
   color: var(--subtext);
 }
 
+.admin-table tbody tr {
+  transition: background-color 0.15s;
+}
+
 .admin-table tbody tr:hover {
-  background-color: var(--gray-light);
+  background-color: var(--table-row-hover);
 }
 
 .status-badge {
@@ -146,15 +166,15 @@
 }
 
 .status-badge.active {
-  background-color: #dcfce7;
-  border-color: #22c55e;
-  color: #166534;
+  background-color: var(--badge-active-bg);
+  border-color: var(--badge-active-border);
+  color: var(--badge-active-text);
 }
 
 .status-badge.inactive {
-  background-color: #fee2e2;
-  border-color: #ef4444;
-  color: #991b1b;
+  background-color: var(--badge-inactive-bg);
+  border-color: var(--badge-inactive-border);
+  color: var(--badge-inactive-text);
 }
 
 /* Action Buttons */
@@ -167,10 +187,11 @@
   padding: var(--sp-4) var(--sp-8);
   font-size: 12px;
   min-width: auto;
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   color: var(--text);
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-icon:hover {
@@ -179,6 +200,10 @@
 
 .btn-delete {
   color: #ef4444;
+}
+
+html.dark .btn-delete {
+  color: #f87171;
 }
 
 /* Pagination */
@@ -192,11 +217,12 @@
 .pagination button {
   padding: var(--sp-8) var(--sp-12);
   border: 1px solid var(--border);
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   color: var(--text);
   cursor: pointer;
   font-size: 14px;
   min-width: 40px;
+  transition: all 0.2s;
 }
 
 .pagination button:hover {
@@ -205,7 +231,7 @@
 
 .pagination button.active {
   background-color: var(--primary);
-  color: white;
+  color: var(--bg);
   border-color: var(--primary);
 }
 
@@ -225,9 +251,10 @@
 }
 
 .algorithm-card {
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   padding: var(--sp-24);
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .algorithm-card h4 {
@@ -262,6 +289,7 @@
   font-size: 12px;
   font-weight: 600;
   margin-bottom: var(--sp-16);
+  color: var(--text);
 }
 
 .institutions-grid {
@@ -272,9 +300,10 @@
 }
 
 .institution-card {
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   padding: var(--sp-24);
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .institution-card h4 {
@@ -340,7 +369,8 @@
   align-items: center;
   padding: var(--sp-16);
   border: 1px solid var(--border);
-  background-color: var(--bg);
+  background-color: var(--card-bg);
+  transition: background-color 0.2s;
 }
 
 .project-info h4 {
@@ -375,9 +405,110 @@
 }
 
 .required::after {
-    content: '*';
-    color: #dc2626;
-    margin-left: 0.25rem;
+  content: '*';
+  color: #dc2626;
+  margin-left: 0.25rem;
+}
+
+html.dark .required::after {
+  color: #fca5a5;
+}
+
+/* Dashboard Specific */
+.dashboard-welcome {
+  background: linear-gradient(135deg, #000 0%, #333 100%);
+  color: white;
+  padding: 3rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+html.dark .dashboard-welcome {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border: 1px solid var(--border);
+}
+
+.dashboard-welcome::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+
+.dashboard-welcome h1,
+.dashboard-welcome h2 {
+  color: white;
+}
+
+.activity-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  height: 100%;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-light);
+  color: var(--primary);
+  transition: background-color 0.2s;
+}
+
+.badge-pill {
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-pill-active {
+  background-color: var(--badge-active-bg);
+  color: var(--badge-active-text);
+}
+
+.badge-pill-inactive {
+  background-color: var(--badge-inactive-bg);
+  color: var(--badge-inactive-text);
+}
+
+/* Discovery Overview Cards */
+.overview-tile {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.overview-tile p:first-child {
+  color: var(--subtext);
+}
+
+.overview-tile p:last-child {
+  color: var(--text);
 }
 
 /* Responsive */

@@ -3,14 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    protected $guarded = [];
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name', 'slug', 'description', 'github_url', 'live_url', 'image',
+        'status', 'created_by', 'course_id', 'subject_id',
+    ];
+
+    // ---- Relationships ----
 
     public function user()
     {
         return $this->belongsTo(User::class , 'created_by');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
     }
 
     public function tags()
@@ -34,18 +52,19 @@ class Project extends Model
         return $this->belongsToMany(Algorithm::class , 'project_algorithm', 'project_id', 'algorithm_id');
     }
 
-    public function course()
-    {
-        return $this->belongsTo(Course::class);
-    }
-
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
-
     public function files()
     {
         return $this->hasMany(ProjectFile::class , 'project_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Accessor for like count
+    public function getLikesCountAttribute()
+    {
+        return $this->likes()->count();
     }
 }
