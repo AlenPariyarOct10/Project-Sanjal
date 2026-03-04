@@ -66,7 +66,12 @@ class ProjectController extends Controller
 
     public function show($slug)
     {
-        $project = Project::with(['course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files'])
+        $project = Project::with([
+            'course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files',
+            'comments' => function ($q) {
+            $q->whereNull('parent_id')->with(['user', 'replies.user'])->latest();
+        }
+        ])
             ->where('slug', $slug)
             ->where('status', true)
             ->firstOrFail();

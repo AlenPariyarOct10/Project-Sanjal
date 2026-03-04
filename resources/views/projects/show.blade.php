@@ -125,17 +125,19 @@
                     <h2 class="text-2xl font-bold text-black mb-6">Academic Context</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @if($project->course)
-                            <div class="bg-gray-50 p-6 border border-gray-200">
+                            <div class="bg-gray-50 p-6 border border-gray-200 group">
                                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Course</span>
                                 <h4 class="font-bold text-lg text-black">{{ $project->course->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ $project->course->code }}</p>
+                                <p class="text-sm text-gray-500 mt-1 mb-3">{{ $project->course->code }}</p>
+                                <a href="{{ route('projects.index', ['course' => $project->course_id]) }}" class="text-xs font-bold text-black border-b border-black hover:text-gray-600 hover:border-gray-600 transition-all">View all projects &rarr;</a>
                             </div>
                         @endif
                         @if($project->subject)
-                            <div class="bg-gray-50 p-6 border border-gray-200">
+                            <div class="bg-gray-50 p-6 border border-gray-200 group">
                                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Subject</span>
                                 <h4 class="font-bold text-lg text-black">{{ $project->subject->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ $project->subject->code }}</p>
+                                <p class="text-sm text-gray-500 mt-1 mb-3">{{ $project->subject->code }}</p>
+                                <a href="{{ route('projects.index', ['subject' => $project->subject_id]) }}" class="text-xs font-bold text-black border-b border-black hover:text-gray-600 hover:border-gray-600 transition-all">View all projects &rarr;</a>
                             </div>
                         @endif
                     </div>
@@ -155,6 +157,128 @@
                     @endif
                 </div>
                 @endif
+                
+                <!-- Comments Section -->
+                <div class="mt-12 pt-8 border-t border-gray-200">
+                    <h2 class="text-2xl font-bold text-black mb-6">Comments & Discussion</h2>
+
+                    <!-- Main Comment Form -->
+                    @if(auth()->guard('client')->check() || auth()->guard('web')->check())
+                        <form action="{{ route('comments.store', $project->id) }}" method="POST" class="mb-10">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="comment-text" class="sr-only">Your Comment</label>
+                                <textarea id="comment-text" name="text" rows="3" class="w-full p-4 border border-gray-300 rounded focus:ring-0 focus:border-black transition-colors" placeholder="Share your thoughts about this project..." required></textarea>
+                            </div>
+                            <button type="submit" class="bg-black text-white px-6 py-2 font-bold text-sm hover:bg-gray-800 transition-colors">Post Comment</button>
+                        </form>
+                    @else
+                        <div class="bg-gray-50 border border-gray-200 p-6 text-center mb-10">
+                            <p class="text-gray-600 mb-4">You must be logged in to comment on this project.</p>
+                            <a href="{{ route('client.login') }}" class="inline-block bg-black text-white px-6 py-2 font-bold text-sm hover:bg-gray-800 transition-colors">Log In or Register</a>
+                        </div>
+                    @endif
+
+                    <!-- Comments List -->
+                    <div class="space-y-8">
+                        @forelse($project->comments as $comment)
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden">
+                                    @if($comment->user && $comment->user->profile_image)
+                                        <img src="{{ asset('storage/' . $comment->user->profile_image) }}" alt="Avatar" class="w-full h-full object-cover">
+                                    @else
+                                        <span class="text-sm font-bold text-gray-400">{{ substr($comment->user->name ?? 'A', 0, 1) }}</span>
+                                    @endif
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-baseline justify-between mb-1">
+                                        <h5 class="font-bold text-sm text-gray-900">{{ $comment->user->name ?? 'Unknown User' }}</h5>
+                                        <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-gray-700 text-sm mb-3 whitespace-pre-line">{{ $comment->text }}</p>
+                                    
+                                    <div class="flex items-center gap-4 text-xs font-bold text-gray-500">
+                                        @if(auth()->guard('client')->check() || auth()->guard('web')->check())
+                                            <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="hover:text-black transition-colors focus:outline-none">Reply</button>
+                                        @endif
+                                        
+                                        @if((auth()->guard('client')->id() == $comment->user_id) || auth()->guard('web')->check())
+                                            <button type="button" onclick="toggleEditForm({{ $comment->id }})" class="hover:text-black transition-colors focus:outline-none">Edit</button>
+                                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-700 transition-colors">Delete</button>
+                                            </form>
+                                        @endif
+                                    </div>
+
+                                    <!-- Reply Form (Hidden) -->
+                                    <form id="reply-form-{{ $comment->id }}" action="{{ route('comments.store', $project->id) }}" method="POST" class="hidden mt-4">
+                                        @csrf
+                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                        <div class="flex items-start gap-4">
+                                            <textarea name="text" rows="2" class="flex-1 p-3 border border-gray-300 rounded text-sm focus:ring-0 focus:border-black transition-colors" placeholder="Write a reply..." required></textarea>
+                                            <button type="submit" class="bg-gray-900 text-white px-4 py-2 font-bold text-xs hover:bg-black transition-colors">Reply</button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Edit Form (Hidden) -->
+                                    <form id="edit-form-{{ $comment->id }}" action="{{ route('comments.update', $comment->id) }}" method="POST" class="hidden mt-4">
+                                        @csrf @method('PUT')
+                                        <div class="flex items-start gap-4">
+                                            <textarea name="text" rows="2" class="flex-1 p-3 border border-gray-300 rounded text-sm focus:ring-0 focus:border-black transition-colors" required>{{ $comment->text }}</textarea>
+                                            <button type="submit" class="bg-gray-900 text-white px-4 py-2 font-bold text-xs hover:bg-black transition-colors">Update</button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Nested Replies -->
+                                    @if($comment->replies->count() > 0)
+                                        <div class="mt-6 space-y-6 border-l-2 border-gray-100 pl-6">
+                                            @foreach($comment->replies as $reply)
+                                                <div class="flex gap-4">
+                                                    <div class="w-8 h-8 flex-shrink-0 bg-gray-100 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden">
+                                                        @if($reply->user && $reply->user->profile_image)
+                                                            <img src="{{ asset('storage/' . $reply->user->profile_image) }}" alt="Avatar" class="w-full h-full object-cover">
+                                                        @else
+                                                            <span class="text-xs font-bold text-gray-400">{{ substr($reply->user->name ?? 'A', 0, 1) }}</span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <div class="flex items-baseline justify-between mb-1">
+                                                            <h5 class="font-bold text-sm text-gray-900">{{ $reply->user->name ?? 'Unknown User' }}</h5>
+                                                            <span class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</span>
+                                                        </div>
+                                                        <p class="text-gray-700 text-sm mb-2 whitespace-pre-line">{{ $reply->text }}</p>
+                                                        
+                                                        <div class="flex items-center gap-4 text-xs font-bold text-gray-500">
+                                                            @if((auth()->guard('client')->id() == $reply->user_id) || auth()->guard('web')->check())
+                                                                <button type="button" onclick="toggleEditForm({{ $reply->id }})" class="hover:text-black transition-colors focus:outline-none">Edit</button>
+                                                                <form action="{{ route('comments.destroy', $reply->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this reply?');">
+                                                                    @csrf @method('DELETE')
+                                                                    <button type="submit" class="text-red-500 hover:text-red-700 transition-colors">Delete</button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- Reply Edit Form (Hidden) -->
+                                                        <form id="edit-form-{{ $reply->id }}" action="{{ route('comments.update', $reply->id) }}" method="POST" class="hidden mt-3">
+                                                            @csrf @method('PUT')
+                                                            <div class="flex items-start gap-4">
+                                                                <textarea name="text" rows="2" class="flex-1 p-3 border border-gray-300 rounded text-sm focus:ring-0 focus:border-black transition-colors" required>{{ $reply->text }}</textarea>
+                                                                <button type="submit" class="bg-gray-900 text-white px-4 py-2 font-bold text-xs hover:bg-black transition-colors">Update</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-gray-500 text-sm italic">No comments yet. Be the first to share your thoughts!</p>
+                        @endforelse
+                    </div>
+                </div>
             </div>
 
             <!-- Right Column: Sidebar -->
@@ -354,6 +478,18 @@
             });
         }
     });
+
+    function toggleReplyForm(id) {
+        document.getElementById('reply-form-' + id).classList.toggle('hidden');
+        const editForm = document.getElementById('edit-form-' + id);
+        if(editForm) editForm.classList.add('hidden');
+    }
+
+    function toggleEditForm(id) {
+        document.getElementById('edit-form-' + id).classList.toggle('hidden');
+        const replyForm = document.getElementById('reply-form-' + id);
+        if(replyForm) replyForm.classList.add('hidden');
+    }
 </script>
 </body>
 </html>

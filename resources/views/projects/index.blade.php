@@ -216,9 +216,7 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-2 font-bold text-2xl mb-6">
-                    <div class="w-10 h-10 bg-white text-black flex items-center justify-center text-lg font-black">N</div>
-                    
+                <div class="flex items-center gap-2 font-bold text-2xl mb-6">                    
                     @if($system_logo)
                         <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
                     @else

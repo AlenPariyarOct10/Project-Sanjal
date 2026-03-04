@@ -595,3 +595,72 @@ html.dark .dashboard-welcome {
     font-size: 24px;
   }
 }
+
+/* ==========================================================
+   Global Show View UI Fixes for Normal & Dark Mode
+   ========================================================== */
+
+/* Buttons & Links */
+.go-back-btn,
+.small-btn {
+  transition: all 0.2s linear;
+  cursor: pointer;
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.go-back-btn:hover,
+.small-btn:hover {
+  background: var(--primary) !important;
+  color: var(--bg) !important;
+  border-color: var(--primary) !important;
+  text-decoration: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Hover Effect for Details Cards */
+.hover-glow {
+  transition: all 0.2s linear;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 0 1px var(--primary) inset !important;
+  border-color: var(--primary) !important;
+  cursor: pointer;
+}
+
+/* Tailwind Overrides for Dark Mode Compatibility */
+.border-black {
+  border-color: var(--border) !important;
+}
+
+.text-black,
+.text-gray-900,
+.text-gray-800 {
+  color: var(--text) !important;
+}
+
+.text-gray-600,
+.text-gray-500,
+.text-gray-700 {
+  color: var(--subtext) !important;
+}
+
+.bg-white,
+.bg-gray-50,
+.bg-gray-100 {
+  background-color: var(--card-bg) !important;
+}
+
+/* Ensure borders are theme-compliant */
+.border,
+.border-l,
+.border-r,
+.border-t,
+.border-b,
+.border-gray-100,
+.border-gray-200,
+.border-gray-300 {
+  border-color: var(--border) !important;
+}

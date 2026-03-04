@@ -18,7 +18,7 @@
 
                 <!-- Logo -->
                 <div class="form-logo">
-                    <div class="logo-icon">N</div>
+                    
                     <div>
                         <h3 style="margin: 0">{{ config('app.name', 'Laravel') }}</h3>
                         <p style="margin: 0; font-size: 12px; color: var(--subtext)">Project Sharing Platform</p>

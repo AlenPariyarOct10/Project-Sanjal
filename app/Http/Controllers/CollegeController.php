@@ -37,18 +37,91 @@ class CollegeController extends Controller
     /**
      * Display the specified college profile.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $college = College::with(['university', 'users'])->findOrFail($id);
+        $college = College::with(['university'])->findOrFail($id);
 
-        // Fetch public projects associated with this college's users
-        $projects = Project::where('status', true)
+        // Fetch innovators (users) from this college
+        $innovators = \App\Models\User::with('role')
+            ->where('college_id', $id)
+            ->where('status', true)
+            ->paginate(10, ['*'], 'innovators_page')
+            ->withQueryString();
+
+        // Fetch valid filter items associated with this college's users' projects
+        $filterCourses = \App\Models\Course::whereHas('projects', function ($q) use ($id) {
+            $q->where('status', true)
+                ->where('is_private', false)
+                ->whereHas('user', function ($qu) use ($id) {
+                $qu->where('college_id', $id);
+            }
+            );
+        })->get();
+
+        $filterSubjects = \App\Models\Subject::whereHas('projects', function ($q) use ($id) {
+            $q->where('status', true)
+                ->where('is_private', false)
+                ->whereHas('user', function ($qu) use ($id) {
+                $qu->where('college_id', $id);
+            }
+            );
+        })->get();
+
+        $filterAlgorithms = \App\Models\Algorithm::whereHas('projects', function ($q) use ($id) {
+            $q->where('status', true)
+                ->where('is_private', false)
+                ->whereHas('user', function ($qu) use ($id) {
+                $qu->where('college_id', $id);
+            }
+            );
+        })->get();
+
+        // Projects Query
+        $projectsQuery = Project::where('status', true)
             ->where('is_private', false)
             ->whereHas('user', function ($query) use ($id) {
             $query->where('college_id', $id);
-        })
-            ->latest()
-            ->paginate(12);
+        });
+
+        // Search
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $projectsQuery->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by course
+        if ($request->filled('course_id')) {
+            $projectsQuery->where('course_id', $request->course_id);
+        }
+
+        // Filter by subject
+        if ($request->filled('subject_id')) {
+            $projectsQuery->where('subject_id', $request->subject_id);
+        }
+
+        // Filter by algorithm
+        if ($request->filled('algorithm_id')) {
+            $projectsQuery->whereHas('algorithms', function ($q) use ($request) {
+                $q->where('algorithms.id', $request->algorithm_id);
+            });
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        if ($sort === 'popular') {
+            $projectsQuery->withCount('likes')->orderByDesc('likes_count');
+        }
+        elseif ($sort === 'oldest') {
+            $projectsQuery->oldest();
+        }
+        else {
+            $projectsQuery->latest();
+        }
+
+        $projects = $projectsQuery->paginate(10, ['*'], 'projects_page')->withQueryString();
 
         $totalLikes = Project::where('status', true)
             ->where('is_private', false)
@@ -59,6 +132,9 @@ class CollegeController extends Controller
             ->get()
             ->sum('likes_count');
 
-        return view('colleges.show', compact('college', 'projects', 'totalLikes'));
+        return view('colleges.show', compact(
+            'college', 'innovators', 'projects', 'totalLikes',
+            'filterCourses', 'filterSubjects', 'filterAlgorithms'
+        ));
     }
 }

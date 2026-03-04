@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $college->name }} - College | ProjectSanjal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
@@ -14,8 +16,7 @@
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
                 <a href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold rounded">N</div>
-                    
+
                     @if($system_logo)
                         <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
                     @else
@@ -56,7 +57,7 @@
 
                 <div class="flex-1 text-center md:text-left">
                     <h1 class="text-3xl font-extrabold mb-2">{{ $college->name }}</h1>
-                    
+
                     @if($college->university)
                     <div class="flex items-center justify-center md:justify-start gap-2 text-gray-600 mb-2">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -85,7 +86,7 @@
                         @if($college->youtube)<a href="{{ $college->youtube }}" target="_blank" class="px-3 md:px-4 py-2 bg-red-600 text-white rounded text-xs font-bold hover:bg-red-700 transition">YouTube</a>@endif
                     </div>
                 </div>
-                
+
                 <div class="hidden lg:flex flex-col gap-6 ml-auto pr-8">
                     <!-- Stats Block -->
                     <div class="grid grid-cols-2 gap-8 text-center bg-gray-50 rounded-lg p-6 border border-gray-100">
@@ -101,7 +102,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile/Tablet only Stats -->
         <div class="grid grid-cols-2 gap-4 text-center bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 lg:hidden">
             <div>
@@ -116,7 +117,7 @@
 
         <!-- College Projects Grid -->
         <h2 class="text-2xl font-bold mb-6">Projects from {{ $college->name }}</h2>
-        
+
         @if($projects->isEmpty())
             <div class="bg-white border border-gray-200 rounded p-12 text-center shadow-sm">
                 <p class="text-gray-500 italic">No public projects have been submitted by students from this college yet.</p>
@@ -136,7 +137,7 @@
                         </div>
                         <div class="p-6 flex-1 flex flex-col">
                             <h3 class="text-xl font-bold mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $project->name }}</h3>
-                            
+
                             <div class="mb-3 text-xs text-gray-400 font-medium">
                                 @if($project->user)
                                     By <a href="{{ route('users.show', $project->user->id) }}" class="text-gray-600 hover:text-black hover:underline transition">{{ $project->user->name }}</a>
@@ -163,6 +164,43 @@
 
             <div>
                 {{ $projects->links() }}
+            </div>
+        @endif
+
+        <!-- Innovators List -->
+        <h2 class="text-2xl font-bold mt-16 mb-6">Innovators from {{ $college->name }}</h2>
+
+        @if($innovators->isEmpty())
+            <div class="bg-white border border-gray-200 rounded p-12 text-center shadow-sm">
+                <p class="text-gray-500 italic">No innovators joined from this college yet.</p>
+            </div>
+        @else
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                @foreach($innovators as $innovator)
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 p-4 text-center group flex flex-col items-center">
+                        <a href="{{ route('users.show', $innovator->id) }}" class="block mb-3">
+                            @if($innovator->profile_image)
+                                <img src="{{ asset('storage/' . $innovator->profile_image) }}" alt="{{ $innovator->name }}" class="w-16 h-16 rounded-full mx-auto object-cover border-2 border-gray-100 group-hover:border-black transition-colors">
+                            @else
+                                <div class="w-16 h-16 rounded-full mx-auto bg-gray-100 flex items-center justify-center text-gray-500 border-2 border-transparent group-hover:border-black transition-colors text-xl font-bold">
+                                    {{ substr($innovator->name, 0, 1) }}
+                                </div>
+                            @endif
+                        </a>
+                        <h3 class="font-bold text-sm text-gray-900 line-clamp-1 mb-1 group-hover:underline transition-all">
+                            <a href="{{ route('users.show', $innovator->id) }}">{{ $innovator->name }}</a>
+                        </h3>
+                        @if($innovator->role)
+                            <p class="text-xs text-gray-500">{{ $innovator->role->name ?? 'Student' }}</p>
+                        @else
+                            <p class="text-xs text-gray-500">Student</p>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+
+            <div>
+                {{ $innovators->links() }}
             </div>
         @endif
     </div>

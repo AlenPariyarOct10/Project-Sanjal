@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $user->name }} - Profile | ProjectSanjal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
@@ -14,8 +16,7 @@
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
                 <a href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold rounded">N</div>
-                    
+
                     @if($system_logo)
                         <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
                     @else
@@ -56,7 +57,7 @@
 
                 <div class="flex-1 text-center md:text-left">
                     <h1 class="text-3xl font-extrabold mb-2">{{ $user->name }}</h1>
-                    
+
                     @if($user->college)
                     <div class="flex items-center justify-center md:justify-start gap-2 text-gray-600 mb-4">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -70,13 +71,59 @@
 
                     <!-- Social Links -->
                     <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                        @if($user->github)<a href="{{ $user->github }}" target="_blank" class="px-3 md:px-4 py-2 bg-gray-900 text-white rounded text-xs font-bold hover:bg-black transition">GitHub</a>@endif
-                        @if($user->linkedin)<a href="{{ $user->linkedin }}" target="_blank" class="px-3 md:px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold hover:bg-blue-700 transition">LinkedIn</a>@endif
-                        @if($user->website)<a href="{{ $user->website }}" target="_blank" class="px-3 md:px-4 py-2 bg-gray-100 text-gray-800 border border-gray-200 rounded text-xs font-bold hover:bg-gray-200 transition">Website</a>@endif
-                        @if($user->twitter)<a href="{{ $user->twitter }}" target="_blank" class="px-3 md:px-4 py-2 bg-sky-500 text-white rounded text-xs font-bold hover:bg-sky-600 transition">Twitter</a>@endif
+
+                        @if($user->github)
+                            <a href="{{ $user->github }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded text-xs font-semibold hover:bg-black transition">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        @endif
+
+                        @if($user->linkedin)
+                            <a href="{{ $user->linkedin }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700 transition">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                        @endif
+
+                        @if($user->facebook)
+                            <a href="{{ $user->facebook }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded text-xs font-semibold hover:bg-blue-600 transition">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </a>
+                        @endif
+
+                        @if($user->instagram)
+                            <a href="{{ $user->instagram }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white rounded text-xs font-semibold hover:opacity-90 transition">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </a>
+                        @endif
+
+                        @if($user->twitter)
+                            <a href="{{ $user->twitter }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-sky-500 text-white rounded text-xs font-semibold hover:bg-sky-600 transition">
+                                <i class="fab fa-twitter"></i> Twitter
+                            </a>
+                        @endif
+
+                        @if($user->youtube)
+                            <a href="{{ $user->youtube }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition">
+                                <i class="fab fa-youtube"></i> YouTube
+                            </a>
+                        @endif
+
+                        @if($user->website)
+                            <a href="{{ $user->website }}" target="_blank"
+                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 border border-gray-200 rounded text-xs font-semibold hover:bg-gray-200 transition">
+                                <i class="fas fa-globe"></i> Website
+                            </a>
+                        @endif
+
                     </div>
                 </div>
-                
+
                 <div class="hidden lg:flex flex-col gap-6 ml-auto pr-8">
                     <!-- Stats Block -->
                     <div class="grid grid-cols-2 gap-8 text-center bg-gray-50 rounded-lg p-6 border border-gray-100">
@@ -92,7 +139,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile/Tablet only Stats -->
         <div class="grid grid-cols-2 gap-4 text-center bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 lg:hidden">
             <div>
@@ -107,7 +154,7 @@
 
         <!-- User's Projects Grid -->
         <h2 class="text-2xl font-bold mb-6">Projects by {{ explode(' ', trim($user->name))[0] }}</h2>
-        
+
         @if($user->projects->isEmpty())
             <div class="bg-white border border-gray-200 rounded p-12 text-center shadow-sm">
                 <p class="text-gray-500 italic">This user hasn't published any public projects yet.</p>
