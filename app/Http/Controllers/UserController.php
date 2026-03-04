@@ -12,20 +12,20 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        // Load the user with their college, active projects, stats
-        $user = User::with(['college', 'teams', 'projects' => function ($query) {
-            $query->where('status', true)
-                ->where('is_private', false)
-                ->latest();
-        }])->findOrFail($id);
+        $user = User::with(['college', 'teams'])->findOrFail($id);
 
-        $totalLikes = $user->projects()
+        // Get all projects (own + team projects)
+        $projects = $user->allProjects()
             ->where('status', true)
             ->where('is_private', false)
-            ->withCount('likes')
-            ->get()
-            ->sum('likes_count');
+            ->with(['tags', 'likes'])
+            ->latest()
+            ->get();
 
-        return view('users.show', compact('user', 'totalLikes'));
+        $totalLikes = $projects->sum(function ($project) {
+            return $project->likes()->count();
+        });
+
+        return view('users.show', compact('user', 'projects', 'totalLikes'));
     }
 }

@@ -76,6 +76,9 @@ class ProjectController extends Controller
             ->where('status', true)
             ->firstOrFail();
 
+        // Increment view count
+        $project->increment('views');
+
         $relatedProjects = Project::where('status', true)
             ->where('is_private', false)
             ->where('id', '!=', $project->id)
@@ -88,6 +91,27 @@ class ProjectController extends Controller
             ->get();
 
         return view('projects.show', compact('project', 'relatedProjects'));
+    }
+
+    public function download($slug)
+    {
+        $project = Project::where('slug', $slug)->firstOrFail();
+        $file = $project->files()->where('status', true)->first();
+
+        if (!$file) {
+            return redirect()->back()->with('error', 'No file found for this project.');
+        }
+
+        // Increment download count
+        $project->increment('downloads');
+
+        $filePath = storage_path('app/public/' . $file->file_path);
+
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File not found on server.');
+        }
+
+        return response()->download($filePath, $file->name ?? ($project->name . '.zip'));
     }
 
     public function toggleLike(Request $request, Project $project)

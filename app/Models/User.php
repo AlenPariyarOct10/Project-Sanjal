@@ -92,4 +92,21 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Team::class , 'team_members', 'user_id', 'team_id');
     }
+
+    /**
+     * Get all projects associated with the user.
+     * Includes projects they created directly AND projects associated with teams they belong to.
+     */
+    public function allProjects()
+    {
+        $teamIds = $this->teams()->pluck('teams.id');
+
+        return Project::where(function ($query) use ($teamIds) {
+            $query->where('created_by', $this->id)
+                ->orWhereHas('teams', function ($q) use ($teamIds) {
+                $q->whereIn('teams.id', $teamIds);
+            }
+            );
+        });
+    }
 }

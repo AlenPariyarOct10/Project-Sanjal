@@ -198,10 +198,10 @@
                 </p>
 
                 <div class="flex gap-4 flex-wrap">
-                    <a href="{{ route('projects.index') }}" class="gradient-btn text-white font-bold px-10 py-4.5 rounded-2xl text-lg shadow-xl shadow-indigo-100">
+                    <a href="{{ route('projects.index') }}" class="gradient-btn text-white font-bold px-10 py-4 rounded-2xl text-lg shadow-xl shadow-indigo-100">
                         Explore Now
                     </a>
-                    <a href="{{ route('client.projects.create') }}" class="bg-white text-slate-900 border border-slate-200 font-bold px-10 py-4.5 rounded-2xl text-lg hover:border-indigo-600 hover:text-indigo-600 transition-all">
+                    <a href="{{ route('client.projects.create') }}" class="bg-white text-slate-900 border border-slate-200 font-bold px-10 py-4 rounded-2xl text-lg hover:border-indigo-600 hover:text-indigo-600 transition-all">
                         Submit Work
                     </a>
                 </div>

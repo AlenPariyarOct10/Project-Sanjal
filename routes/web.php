@@ -12,6 +12,7 @@ Route::get('/', [HomeController::class , 'index'])->name('home');
 
 Route::get('/projects', [ProjectController::class , 'index'])->name('projects.index');
 Route::get('/projects/{slug}', [ProjectController::class , 'show'])->name('projects.show');
+Route::get('/projects/{slug}/download', [ProjectController::class , 'download'])->name('projects.download');
 Route::post('/projects/{project}/like', [ProjectController::class , 'toggleLike'])->name('projects.like');
 Route::get('/users/{user}', [\App\Http\Controllers\UserController::class , 'show'])->name('users.show');
 Route::get('/colleges', [\App\Http\Controllers\CollegeController::class , 'index'])->name('colleges.index');

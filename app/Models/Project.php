@@ -11,7 +11,7 @@ class Project extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'github_url', 'live_url', 'image',
-        'status', 'created_by', 'course_id', 'subject_id',
+        'status', 'created_by', 'course_id', 'subject_id', 'views', 'downloads'
     ];
 
     // ---- Relationships ----

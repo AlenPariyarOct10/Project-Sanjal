@@ -128,7 +128,7 @@
                     <!-- Stats Block -->
                     <div class="grid grid-cols-2 gap-8 text-center bg-gray-50 rounded-lg p-6 border border-gray-100">
                         <div>
-                            <div class="text-4xl font-extrabold text-black">{{ $user->projects->count() }}</div>
+                            <div class="text-4xl font-extrabold text-black">{{ $projects->count() }}</div>
                             <div class="text-xs uppercase tracking-widest text-gray-500 font-bold mt-1">Projects</div>
                         </div>
                         <div>
@@ -143,7 +143,7 @@
         <!-- Mobile/Tablet only Stats -->
         <div class="grid grid-cols-2 gap-4 text-center bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 lg:hidden">
             <div>
-                <div class="text-3xl font-extrabold text-black">{{ $user->projects->count() }}</div>
+                <div class="text-3xl font-extrabold text-black">{{ $projects->count() }}</div>
                 <div class="text-xs uppercase tracking-widest text-gray-500 font-bold mt-1">Projects</div>
             </div>
             <div>
@@ -155,13 +155,13 @@
         <!-- User's Projects Grid -->
         <h2 class="text-2xl font-bold mb-6">Projects by {{ explode(' ', trim($user->name))[0] }}</h2>
 
-        @if($user->projects->isEmpty())
+        @if($projects->isEmpty())
             <div class="bg-white border border-gray-200 rounded p-12 text-center shadow-sm">
                 <p class="text-gray-500 italic">This user hasn't published any public projects yet.</p>
             </div>
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($user->projects as $project)
+                @foreach($projects as $project)
                     <div class="bg-white border border-gray-200 rounded overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
                         <div class="aspect-video bg-gray-100 overflow-hidden shrink-0">
                             @if($project->image)
@@ -180,9 +180,19 @@
                                 <a href="{{ route('projects.show', $project->slug) }}" class="text-black font-bold text-sm hover:underline flex items-center gap-1">
                                     View Project <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
                                 </a>
-                                <div class="flex items-center text-gray-500 text-xs gap-1 font-medium bg-gray-50 px-2 py-1 rounded">
-                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                    {{ $project->likes()->count() }}
+                                <div class="flex items-center text-gray-500 text-[10px] gap-2 font-medium bg-gray-50 px-2 py-1 rounded">
+                                    <span class="flex items-center gap-1" title="Likes">
+                                        <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                        {{ $project->likes()->count() }}
+                                    </span>
+                                    <span class="flex items-center gap-1" title="Views">
+                                        <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        {{ $project->views }}
+                                    </span>
+                                    <span class="flex items-center gap-1" title="Downloads">
+                                        <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                        {{ $project->downloads }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
