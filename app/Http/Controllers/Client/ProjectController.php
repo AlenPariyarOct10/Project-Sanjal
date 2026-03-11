@@ -93,8 +93,17 @@ class ProjectController extends Controller
             'algorithms.*' => 'exists:algorithms,id',
             'teams' => 'nullable|array',
             'teams.*' => 'exists:teams,id',
-            'files' => 'nullable|array',
-            'files.*' => 'file|max:10240', // 10MB limit per file
+            // Documentation files: PDF, DOC, DOCX, PPT, PPTX — max 20MB each
+            'documentation_files' => 'nullable|array',
+            'documentation_files.*' => 'file|max:20480|mimes:pdf,doc,docx,ppt,pptx',
+            // Source code files: ZIP, RAR, 7z — max 20MB each
+            'source_files' => 'nullable|array',
+            'source_files.*' => 'file|max:20480|mimes:zip,rar,7z',
+        ], [
+            'documentation_files.*.mimes' => 'Documentation files must be PDF, DOC, DOCX, PPT, or PPTX.',
+            'documentation_files.*.max' => 'Each documentation file must not exceed 20MB.',
+            'source_files.*.mimes' => 'Source code files must be ZIP, RAR, or 7Z archives.',
+            'source_files.*.max' => 'Each source code file must not exceed 20MB.',
         ]);
 
         $project = new Project();
@@ -130,15 +139,31 @@ class ProjectController extends Controller
             $project->teams()->sync($request->teams);
         }
 
-        // Handle Multiple Project Files
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('project_files', 'public');
+        // Handle Documentation Files
+        if ($request->hasFile('documentation_files')) {
+            foreach ($request->file('documentation_files') as $file) {
+                $path = $file->store('project_files/documentation', 'public');
                 ProjectFile::create([
                     'project_id' => $project->id,
                     'name' => $file->getClientOriginalName(),
                     'file_path' => $path,
                     'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'documentation',
+                    'created_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        // Handle Source Code Files
+        if ($request->hasFile('source_files')) {
+            foreach ($request->file('source_files') as $file) {
+                $path = $file->store('project_files/source', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'source_code',
                     'created_by' => auth()->id(),
                 ]);
             }
@@ -211,8 +236,15 @@ class ProjectController extends Controller
             'algorithms.*' => 'exists:algorithms,id',
             'teams' => 'nullable|array',
             'teams.*' => 'exists:teams,id',
-            'files' => 'nullable|array',
-            'files.*' => 'file|max:10240',
+            'documentation_files' => 'nullable|array',
+            'documentation_files.*' => 'file|max:20480|mimes:pdf,doc,docx,ppt,pptx',
+            'source_files' => 'nullable|array',
+            'source_files.*' => 'file|max:20480|mimes:zip,rar,7z',
+        ], [
+            'documentation_files.*.mimes' => 'Documentation files must be PDF, DOC, DOCX, PPT, or PPTX.',
+            'documentation_files.*.max' => 'Each documentation file must not exceed 20MB.',
+            'source_files.*.mimes' => 'Source code files must be ZIP, RAR, or 7Z archives.',
+            'source_files.*.max' => 'Each source code file must not exceed 20MB.',
         ]);
 
         $project->name = $request->name;
@@ -238,15 +270,32 @@ class ProjectController extends Controller
         $project->algorithms()->sync($request->algorithms ?? []);
         $project->teams()->sync($request->teams ?? []);
 
-        // Handle New Files
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('project_files', 'public');
+        // Handle New Documentation Files
+        if ($request->hasFile('documentation_files')) {
+            foreach ($request->file('documentation_files') as $file) {
+                $path = $file->store('project_files/documentation', 'public');
                 ProjectFile::create([
                     'project_id' => $project->id,
                     'name' => $file->getClientOriginalName(),
                     'file_path' => $path,
                     'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'documentation',
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        // Handle New Source Code Files
+        if ($request->hasFile('source_files')) {
+            foreach ($request->file('source_files') as $file) {
+                $path = $file->store('project_files/source', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'source_code',
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ]);

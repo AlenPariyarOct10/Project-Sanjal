@@ -301,10 +301,45 @@
                             @endif
 
                             @if($project->files->count() > 0)
-                                <a href="{{ route('projects.download', $project->slug) }}" class="flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 hover:bg-indigo-700 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                    Download Project
-                                </a>
+                                @php
+                                    $docFiles  = $project->files->where('file_category', 'documentation');
+                                    $srcFiles  = $project->files->where('file_category', 'source_code');
+                                    $otherFiles = $project->files->whereNotIn('file_category', ['documentation', 'source_code']);
+                                    $totalFiles = $project->files->count();
+                                @endphp
+                                <div class="border border-indigo-100 bg-indigo-50 rounded p-4">
+                                    <h4 class="font-bold text-sm text-indigo-900 mb-3 flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                        Project Files ({{ $totalFiles }})
+                                    </h4>
+                                    <div class="space-y-1 mb-4 text-xs">
+                                        @if($docFiles->count() > 0)
+                                            <div class="flex items-center gap-2 text-blue-700">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                <span>{{ $docFiles->count() }} Documentation {{ Str::plural('file', $docFiles->count()) }}</span>
+                                            </div>
+                                        @endif
+                                        @if($srcFiles->count() > 0)
+                                            <div class="flex items-center gap-2 text-purple-700">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                                <span>{{ $srcFiles->count() }} Source code {{ Str::plural('file', $srcFiles->count()) }}</span>
+                                            </div>
+                                        @endif
+                                        @if($otherFiles->count() > 0)
+                                            <div class="flex items-center gap-2 text-gray-600">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                <span>{{ $otherFiles->count() }} Other {{ Str::plural('file', $otherFiles->count()) }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('projects.download', $project->slug) }}" class="flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 hover:bg-indigo-700 transition-colors w-full rounded">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        {{ $totalFiles > 1 ? 'Download All as ZIP' : 'Download File' }}
+                                    </a>
+                                    @if($totalFiles > 1)
+                                        <p class="text-xs text-indigo-500 text-center mt-2">All {{ $totalFiles }} files packaged in one ZIP</p>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>

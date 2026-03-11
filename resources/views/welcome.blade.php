@@ -188,8 +188,8 @@
                 </div>
 
                 <h1 class="text-6xl md:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
-                    Share & <br>
-                    <span class="gradient-text">Collaborate</span><br>
+                    Platform for IT Students To<br>
+                    <span class="gradient-text">Showcase</span><br>
                     IT Projects
                 </h1>
 

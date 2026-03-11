@@ -96,22 +96,64 @@ class ProjectController extends Controller
     public function download($slug)
     {
         $project = Project::where('slug', $slug)->firstOrFail();
-        $file = $project->files()->where('status', true)->first();
+        $files = $project->files()->where('status', true)->get();
 
-        if (!$file) {
+        if ($files->isEmpty()) {
             return redirect()->back()->with('error', 'No file found for this project.');
         }
 
-        // Increment download count
-        $project->increment('downloads');
+        // --- Single file: stream it directly ---
+        if ($files->count() === 1) {
+            $file = $files->first();
+            $filePath = storage_path('app/public/' . $file->file_path);
 
-        $filePath = storage_path('app/public/' . $file->file_path);
+            if (!file_exists($filePath)) {
+                return redirect()->back()->with('error', 'File not found on server.');
+            }
 
-        if (!file_exists($filePath)) {
-            return redirect()->back()->with('error', 'File not found on server.');
+            $project->increment('downloads');
+
+            return response()->download($filePath, $file->name ?? basename($filePath));
         }
 
-        return response()->download($filePath, $file->name ?? ($project->name . '.zip'));
+        // --- Multiple files: build a ZIP in memory and stream it ---
+        if (!class_exists('ZipArchive')) {
+            return redirect()->back()->with('error', 'ZIP support is not available on this server.');
+        }
+
+        $zipFileName = \Illuminate\Support\Str::slug($project->name) . '-files.zip';
+        $zipTmpPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $zipFileName;
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipTmpPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return redirect()->back()->with('error', 'Could not create ZIP archive.');
+        }
+
+        $added = 0;
+        foreach ($files as $file) {
+            $filePath = storage_path('app/public/' . $file->file_path);
+            if (file_exists($filePath)) {
+                // Organise files into sub-folders by category
+                $folder = match ($file->file_category) {
+                        'documentation' => 'documentation/',
+                        'source_code' => 'source_code/',
+                        default => '',
+                    };
+                $zip->addFile($filePath, $folder . ($file->name ?? basename($filePath)));
+                $added++;
+            }
+        }
+
+        $zip->close();
+
+        if ($added === 0) {
+            @unlink($zipTmpPath);
+            return redirect()->back()->with('error', 'No files found on server.');
+        }
+
+        $project->increment('downloads');
+
+        return response()->download($zipTmpPath, $zipFileName)->deleteFileAfterSend(true);
     }
 
     public function toggleLike(Request $request, Project $project)

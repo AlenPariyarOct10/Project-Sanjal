@@ -103,12 +103,48 @@
                             <x-input-error :messages="$errors->get('image')" class="mt-2" />
                         </div>
 
-                        <!-- Project Files -->
-                        <div>
-                            <x-input-label for="files" :value="__('Project Documentation / Source Files')" />
-                            <input id="files" type="file" name="files[]" multiple class="block mt-1 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" />
-                            <p class="text-xs text-gray-500 mt-1">Upload ZIP, PDF, or Doc files. Max 10MB per file.</p>
-                            <x-input-error :messages="$errors->get('files')" class="mt-2" />
+                        <!-- Documentation Files -->
+                        <div class="border border-gray-200 rounded-lg p-5 bg-gray-50">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                </div>
+                                <div>
+                                    <x-input-label for="documentation_files" :value="__('Documentation Files')" class="!mb-0 font-semibold" />
+                                    <p class="text-xs text-gray-500">PDF, DOC, DOCX, PPT, PPTX &mdash; max 20 MB each &mdash; <span class="font-medium text-gray-600">Optional, multiple allowed</span></p>
+                                </div>
+                            </div>
+                            <label for="documentation_files" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-white hover:bg-blue-50 transition-colors">
+                                <svg class="w-7 h-7 text-blue-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <span class="text-sm text-blue-600 font-semibold">Click to upload documentation</span>
+                                <span class="text-xs text-gray-400">or drag and drop</span>
+                                <input id="documentation_files" type="file" name="documentation_files[]" multiple accept=".pdf,.doc,.docx,.ppt,.pptx" class="hidden" onchange="showFileList(this, 'doc-file-list')" />
+                            </label>
+                            <ul id="doc-file-list" class="mt-2 space-y-1 text-xs text-gray-600"></ul>
+                            <x-input-error :messages="$errors->get('documentation_files')" class="mt-1" />
+                            <x-input-error :messages="$errors->get('documentation_files.*')" class="mt-1" />
+                        </div>
+
+                        <!-- Source Code Files -->
+                        <div class="border border-gray-200 rounded-lg p-5 bg-gray-50">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                </div>
+                                <div>
+                                    <x-input-label for="source_files" :value="__('Source Code Files')" class="!mb-0 font-semibold" />
+                                    <p class="text-xs text-gray-500">ZIP, RAR, 7Z archives &mdash; max 20 MB each &mdash; <span class="font-medium text-gray-600">Optional, multiple allowed</span></p>
+                                </div>
+                            </div>
+                            <label for="source_files" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-purple-300 rounded-lg cursor-pointer bg-white hover:bg-purple-50 transition-colors">
+                                <svg class="w-7 h-7 text-purple-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <span class="text-sm text-purple-600 font-semibold">Click to upload source code</span>
+                                <span class="text-xs text-gray-400">or drag and drop</span>
+                                <input id="source_files" type="file" name="source_files[]" multiple accept=".zip,.rar,.7z" class="hidden" onchange="showFileList(this, 'src-file-list')" />
+                            </label>
+                            <ul id="src-file-list" class="mt-2 space-y-1 text-xs text-gray-600"></ul>
+                            <x-input-error :messages="$errors->get('source_files')" class="mt-1" />
+                            <x-input-error :messages="$errors->get('source_files.*')" class="mt-1" />
                         </div>
 
                         <!-- Private Toggle -->
@@ -154,6 +190,21 @@
         // Trigger change if course is already selected (e.g. following validation error)
         if (document.getElementById('course_id').value) {
             document.getElementById('course_id').dispatchEvent(new Event('change'));
+        }
+
+        // Show selected file names + sizes under the upload boxes
+        function showFileList(input, listId) {
+            const list = document.getElementById(listId);
+            list.innerHTML = '';
+            Array.from(input.files).forEach(function(file) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                const li = document.createElement('li');
+                li.className = 'flex items-center gap-2 py-1 px-2 bg-white rounded border border-gray-100';
+                li.innerHTML = `<svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <span class="truncate flex-1">${file.name}</span>
+                    <span class="text-gray-400 flex-shrink-0">${sizeMB} MB</span>`;
+                list.appendChild(li);
+            });
         }
     </script>
 </x-app-layout>
