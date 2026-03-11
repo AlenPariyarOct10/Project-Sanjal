@@ -1,7 +1,7 @@
 <p align="center">
-![project-sanjal](https://github.com/user-attachments/assets/d3181e3b-315e-4cc2-bc23-be3759a80788)
-
-
+  <img src="https://github.com/user-attachments/assets/d3181e3b-315e-4cc2-bc23-be3759a80788" 
+       alt="ProjectSanjal Logo" 
+       width="200">
   <h1 align="center">ProjectSanjal</h1>
 
   <p align="center">
@@ -102,6 +102,3 @@ Build Tools | Vite |
 
 ---
 
-## Screenshots
-
-*(Add screenshots of your application here)*
