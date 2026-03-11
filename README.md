@@ -95,10 +95,7 @@ Administrators can manage:
 |------|-------------|
 Backend | Laravel |
 Frontend | Blade Templates + TailwindCSS |
-Authentication | Laravel Breeze |
 Database | MySQL |
-File Storage | Laravel Storage |
-Build Tools | Vite |
 
 ---
 
