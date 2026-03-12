@@ -33,9 +33,9 @@ class UniversityController extends Controller
         $folder_name = 'universities';
         $view_path = "admin.universities.";
         $base_route = "admin.universities.";
-        $table_id = $folder_name."Table";
+        $table_id = $folder_name . "Table";
         $ajax_url = route('admin.universities.data');
-        $sub_heading = "Manage ".$folder_name." across Nepal";
+        $sub_heading = "Manage " . $folder_name . " across Nepal";
 
         $columns = [
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
@@ -49,7 +49,7 @@ class UniversityController extends Controller
 
         return view(
             'admin.universities.index',
-            compact('module', 'folder_name', 'view_path', 'base_route', 'table_id', 'columns','ajax_url', 'sub_heading' )
+            compact('module', 'folder_name', 'view_path', 'base_route', 'table_id', 'columns', 'ajax_url', 'sub_heading')
         );
     }
 
@@ -58,7 +58,7 @@ class UniversityController extends Controller
      */
     public function create()
     {
-        //
+    //
     }
 
     /**
@@ -71,24 +71,24 @@ class UniversityController extends Controller
 
             // 1. Validate request
             $validated = $request->validate([
-                'name'        => 'required|string|max:255',
+                'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'address'     => 'nullable|string|max:255',
-                'phone'       => 'nullable|string|max:50',
-                'email'       => 'nullable|email|max:255',
-                'website'     => 'nullable|url|max:255',
-                'facebook'    => 'nullable|url|max:255',
-                'twitter'     => 'nullable|url|max:255',
-                'instagram'   => 'nullable|url|max:255',
-                'youtube'     => 'nullable|url|max:255',
-                'linkedin'    => 'nullable|url|max:255',
-                'logo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'address' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:50',
+                'email' => 'nullable|email|max:255',
+                'website' => 'nullable|url|max:255',
+                'facebook' => 'nullable|url|max:255',
+                'twitter' => 'nullable|url|max:255',
+                'instagram' => 'nullable|url|max:255',
+                'youtube' => 'nullable|url|max:255',
+                'linkedin' => 'nullable|url|max:255',
+                'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             // 2. File upload
             if ($request->hasFile('logo')) {
                 $file = $request->file('logo');
-                $filename = time().'_'.$file->getClientOriginalName();
+                $filename = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/universities'), $filename);
 
                 $validated['logo'] = 'uploads/universities/' . $filename;
@@ -98,23 +98,24 @@ class UniversityController extends Controller
             $baseSlug = Str::slug($name);
             $existingCount = University::where('slug', 'LIKE', $baseSlug . '%')->count();
             $validated['slug'] = $existingCount > 0 ? $baseSlug . '-' . ($existingCount + 1) : $baseSlug;
-            $validated['key'] = Str::slug($validated['name'], '_').'_' . uniqid();
+            $validated['key'] = Str::slug($validated['name'], '_') . '_' . uniqid();
 
             University::create($validated);
 
             DB::commit();
 
             return response()->json([
-                "status"  => "success",
+                "status" => "success",
                 "message" => "University added successfully!",
             ]);
 
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
 
             DB::rollBack();
 
             return response()->json([
-                "status"  => "error",
+                "status" => "error",
                 "message" => "Failed to add university!",
             ]);
         }
@@ -123,11 +124,11 @@ class UniversityController extends Controller
     public function data(Request $request)
     {
         $datatable = new AdminGeneralDataTableService(
-            University::class,
+            University::class ,
             'admin.universities.',
             'University',
-            ['name', 'address', 'email', 'phone', 'website', 'created_at'],
-        );
+        ['name', 'address', 'email', 'phone', 'website', 'created_at'],
+            );
 
         return $datatable->getDataForDataTable($request);
     }
@@ -142,13 +143,57 @@ class UniversityController extends Controller
         try {
             $base_route = $this->base_route;
 
-            $row = University::where('slug', $slug)->firstOrFail();
+            $row = University::where('slug', $slug)
+                ->with(['colleges.users'])
+                ->firstOrFail();
+
+            $collegeIds = $row->colleges->pluck('id');
+            $userIds = $row->colleges->flatMap(fn($c) => $c->users->pluck('id'));
+
+            // --- Stats ---
+            $totalProjects = \App\Models\Project::whereIn('created_by', $userIds)->count();
+            $activeColleges = $row->colleges->count();
+            $totalStudents = $userIds->count();
+            $totalLikes = \App\Models\Project::whereIn('created_by', $userIds)
+                ->withCount('likes')->get()->sum('likes_count');
+
+            // --- Top 6 recent projects linked to uni students ---
+            $topProjects = \App\Models\Project::with(['user.college'])
+                ->whereIn('created_by', $userIds)
+                ->where('status', true)
+                ->withCount('likes')
+                ->orderByDesc('likes_count')
+                ->take(6)
+                ->get();
+
+            // --- Top 10 tags used in projects from this university ---
+            $topTags = \App\Models\Tag::withCount(['projects' => function ($q) use ($userIds) {
+                $q->whereIn('created_by', $userIds);
+            }])
+                ->having('projects_count', '>', 0)
+                ->orderByDesc('projects_count')
+                ->take(10)
+                ->get();
+
+            // --- Top 8 algorithms used in projects from this university ---
+            $topAlgorithms = \App\Models\Algorithm::withCount(['projects' => function ($q) use ($userIds) {
+                $q->whereIn('created_by', $userIds);
+            }])
+                ->having('projects_count', '>', 0)
+                ->orderByDesc('projects_count')
+                ->take(8)
+                ->get();
 
             return view(
                 'admin.universities.show',
-                compact('base_route','row')
+                compact(
+                'base_route', 'row',
+                'totalProjects', 'activeColleges', 'totalStudents', 'totalLikes',
+                'topProjects', 'topTags', 'topAlgorithms'
+            )
             );
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return back()->with('error', 'University not found!');
         }
     }
@@ -158,15 +203,16 @@ class UniversityController extends Controller
      */
     public function edit(string $id)
     {
-        try{
+        try {
             $row = University::findOrFail($id);
             return response()->json([
-                "status"  => "success",
-                "data"    => $row,
+                "status" => "success",
+                "data" => $row,
             ]);
-        }catch(\Exception $e){
+        }
+        catch (\Exception $e) {
             return response()->json([
-                "status"  => "error",
+                "status" => "error",
                 "message" => "University not found!",
             ]);
         }
@@ -183,23 +229,23 @@ class UniversityController extends Controller
             $university = University::findOrFail($id);
 
             $validated = $request->validate([
-                'name'        => 'required|string|max:255',
+                'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'address'     => 'nullable|string|max:255',
-                'phone'       => 'nullable|string|max:50',
-                'email'       => 'nullable|email|max:255',
-                'website'     => 'nullable|url|max:255',
-                'facebook'    => 'nullable|url|max:255',
-                'twitter'     => 'nullable|url|max:255',
-                'instagram'   => 'nullable|url|max:255',
-                'youtube'     => 'nullable|url|max:255',
-                'linkedin'    => 'nullable|url|max:255',
-                'logo'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'address' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:50',
+                'email' => 'nullable|email|max:255',
+                'website' => 'nullable|url|max:255',
+                'facebook' => 'nullable|url|max:255',
+                'twitter' => 'nullable|url|max:255',
+                'instagram' => 'nullable|url|max:255',
+                'youtube' => 'nullable|url|max:255',
+                'linkedin' => 'nullable|url|max:255',
+                'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             if ($request->hasFile('logo')) {
                 $file = $request->file('logo');
-                $filename = time().'_'.$file->getClientOriginalName();
+                $filename = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/universities'), $filename);
                 $validated['logo'] = 'uploads/universities/' . $filename;
             }
@@ -217,7 +263,8 @@ class UniversityController extends Controller
                 "status" => "success",
                 "message" => "University updated successfully!",
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 "status" => "error",
@@ -236,12 +283,13 @@ class UniversityController extends Controller
             $university->delete();
 
             return response()->json([
-                "status"  => "success",
+                "status" => "success",
                 "message" => "University deleted successfully!",
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
-                "status"  => "error",
+                "status" => "error",
                 "message" => "Failed to delete university!",
             ]);
         }

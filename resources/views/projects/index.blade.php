@@ -14,8 +14,8 @@
         <nav class="flex justify-between items-center py-4">
             <div class="flex items-center gap-2 font-bold text-lg">
                 <a href="/" class="flex items-center gap-2">
-                    
-                    
+
+
                     @if($system_logo)
                         <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
                     @else
@@ -28,7 +28,7 @@
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-black font-semibold text-sm underline">Browse Projects</a></li>
                 <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Colleges</a></li>
-                
+
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
                     <li><a href="{{ route('client.projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">My Projects</a></li>
@@ -83,7 +83,7 @@
                         <input type="text" name="search" placeholder="Search projects by name or description..." value="{{ request('search') }}" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-black">
                         <button type="submit" class="bg-black text-white px-8 py-3 font-semibold rounded hover:bg-gray-800 transition">Search</button>
                     </div>
-                
+
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Course</label>
                         <select name="course" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-black text-sm">
@@ -141,7 +141,7 @@
                             <option value="likes" {{ request('sort') == 'likes' ? 'selected' : '' }}>Most Liked</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-span-1 md:col-span-2 lg:col-span-2 flex justify-end items-end gap-2">
                         @if(request()->anyFilled(['search', 'course', 'subject', 'college', 'tag', 'algorithm', 'sort']))
                             <a href="{{ route('projects.index') }}" class="text-sm text-gray-500 hover:text-black hover:underline py-2 px-3">Clear</a>
@@ -170,8 +170,8 @@
                             @endif
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold mb-1 group-hover:text-blue-600 transition-colors">{{ $project->name }}</h3>
-                            
+                            <a href="{{ route('projects.show', $project->slug) }}" class="text-xl font-bold mb-1 group-hover:text-blue-600 transition-colors">{{ $project->name }}</a>
+
                             <div class="mb-3 text-xs text-gray-400 font-medium">
                                 @if($project->user)
                                     By <a href="{{ route('users.show', $project->user->id) }}" class="text-gray-600 hover:text-black hover:underline transition">{{ $project->user->name }}</a>
@@ -181,7 +181,7 @@
                             </div>
 
                             <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $project->description }}</p>
-                            
+
                             <div class="flex flex-wrap gap-2 mb-6">
                                 @foreach($project->tags->take(3) as $tag)
                                     <span class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider">{{ $tag->name }}</span>
@@ -224,7 +224,7 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-2 font-bold text-2xl mb-6">                    
+                <div class="flex items-center gap-2 font-bold text-2xl mb-6">
                     @if($system_logo)
                         <img src="{{ $system_logo }}" alt="{{ $system_name }}" class="w-10 h-10 object-contain">
                     @else

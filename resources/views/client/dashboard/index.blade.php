@@ -121,7 +121,7 @@
                             </a>
                             <a href="{{ route('projects.index') }}" class="flex items-center justify-center gap-2 border border-white text-white py-2 rounded font-bold hover:bg-white hover:text-black transition-all">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                Explore Hub
+                                Explore Projects
                             </a>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                                     <div class="bg-black h-2 rounded-full" style="width: {{ $publicPercentage }}%"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="flex justify-between items-center text-sm pt-2 border-t border-gray-50">
                                 <span class="text-gray-500">Member Since</span>
                                 @php

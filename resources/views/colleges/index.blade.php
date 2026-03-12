@@ -26,7 +26,7 @@
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
                 <li><a href="{{ route('colleges.index') }}" class="text-black font-semibold text-sm underline">Colleges</a></li>
-                
+
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
                     <li>
@@ -94,15 +94,15 @@
                                 <span class="text-3xl font-black text-gray-300">{{ substr($college->name, 0, 1) }}</span>
                             @endif
                         </div>
-                        
-                        <h3 class="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $college->name }}</h3>
-                        
+
+                        <a href="{{ route('colleges.show', $college->id) }}" class="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $college->name }}</a>
+
                         @if($college->university)
                             <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 inline-block bg-gray-100 px-3 py-1 rounded-full">{{ $college->university->name }}</span>
                         @endif
 
                         <p class="text-gray-600 text-sm mb-6 line-clamp-2">{{ $college->description ?? 'No description provided.' }}</p>
-                        
+
                         <div class="mt-auto w-full pt-6 border-t border-gray-50 flex flex-col gap-3">
                             <div class="flex items-center justify-center gap-1 text-xs text-gray-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
