@@ -128,29 +128,43 @@
                 @if($project->screenshots->count() > 0)
                 <div class="mb-12">
                     <h2 class="text-2xl font-bold text-black mb-6">Project Gallery</h2>
-                    <div class="space-y-8">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach($project->screenshots as $screenshot)
-                            <div class="group relative bg-gray-50 border border-gray-100 p-2 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
-                                <div class="aspect-video w-full rounded-lg overflow-hidden bg-gray-200">
-                                    <img src="{{ asset('storage/' . $screenshot->file_path) }}" 
-                                         alt="{{ $screenshot->description ?: $project->name }}" 
-                                         class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500">
-                                </div>
-                                @if($screenshot->description)
-                                    <div class="p-4">
-                                        <p class="text-gray-600 text-sm italic leading-relaxed">
-                                            <span class="text-indigo-600 font-bold not-italic mr-1">#</span> 
-                                            {{ $screenshot->description }}
-                                        </p>
+                            <div class="group relative aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+                                 onclick="openLightbox('{{ asset('storage/' . $screenshot->file_path) }}', '{{ addslashes($screenshot->description) }}')">
+                                <img src="{{ asset('storage/' . $screenshot->file_path) }}" 
+                                     alt="{{ $screenshot->description ?: $project->name }}" 
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                    <div class="bg-white/10 backdrop-blur-md rounded-lg p-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                        <p class="text-white text-[10px] font-bold uppercase tracking-widest truncate line-clamp-1">View Full Image</p>
+                                        @if($screenshot->description)
+                                            <p class="text-gray-200 text-[10px] line-clamp-1 italic">{{ $screenshot->description }}</p>
+                                        @endif
                                     </div>
-                                @endif
-                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <a href="{{ asset('storage/' . $screenshot->file_path) }}" target="_blank" class="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg text-gray-900 hover:text-indigo-600 transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                    </a>
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+
+                <!-- Lightbox Modal -->
+                <div id="galleryLightbox" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeLightbox()"></div>
+                    
+                    <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center gap-4 z-10">
+                        <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        
+                        <div class="w-full h-full overflow-hidden rounded-xl shadow-2xl bg-black flex items-center justify-center">
+                            <img id="lightboxImage" src="" alt="Gallery Preview" class="max-w-full max-h-[80vh] object-contain">
+                        </div>
+                        
+                        <div id="lightboxCaption" class="text-center text-white px-6 hidden">
+                            <p class="text-sm font-medium italic opacity-90"></p>
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -525,6 +539,30 @@
 </footer>
 
 <script>
+    function openLightbox(src, caption) {
+        const lightbox = document.getElementById('galleryLightbox');
+        const img = document.getElementById('lightboxImage');
+        const captionDiv = document.getElementById('lightboxCaption');
+        const captionText = captionDiv.querySelector('p');
+
+        img.src = src;
+        if (caption && caption !== 'null' && caption !== 'undefined') {
+            captionText.innerText = caption;
+            captionDiv.classList.remove('hidden');
+        } else {
+            captionDiv.classList.add('hidden');
+        }
+
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('galleryLightbox');
+        lightbox.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const likeForm = document.getElementById('like-form');
         if (likeForm) {
