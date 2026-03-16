@@ -12,6 +12,7 @@ use App\Models\University;
 use App\Models\College;
 use App\Models\Team;
 use App\Models\ProjectFile;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -70,8 +71,9 @@ class ProjectController extends Controller
         $universities = University::where('status', true)->get();
         $colleges = College::where('status', true)->get();
         $teams = Team::where('created_by', auth()->id())->get();
+        $technologies = Technology::orderBy('name')->get();
 
-        return view('client.projects.create', compact('tags', 'courses', 'algorithms', 'universities', 'colleges', 'teams'));
+        return view('client.projects.create', compact('tags', 'courses', 'algorithms', 'universities', 'colleges', 'teams', 'technologies'));
     }
 
     /**
@@ -93,17 +95,28 @@ class ProjectController extends Controller
             'algorithms.*' => 'exists:algorithms,id',
             'teams' => 'nullable|array',
             'teams.*' => 'exists:teams,id',
+            'technologies' => 'nullable|array',
+            'technologies.*' => 'exists:technologies,id',
             // Documentation files: PDF, DOC, DOCX, PPT, PPTX — max 20MB each
             'documentation_files' => 'nullable|array',
             'documentation_files.*' => 'file|max:20480|mimes:pdf,doc,docx,ppt,pptx',
             // Source code files: ZIP, RAR, 7z — max 20MB each
             'source_files' => 'nullable|array',
             'source_files.*' => 'file|max:20480|mimes:zip,rar,7z',
+            // Screenshots: images only, max 5MB each, max 10 images
+            'screenshots' => 'nullable|array|max:10',
+            'screenshots.*' => 'image|max:5120|mimes:jpg,jpeg,png,gif,webp',
+            'screenshot_descriptions' => 'nullable|array',
+            'screenshot_descriptions.*' => 'nullable|string|max:500',
         ], [
             'documentation_files.*.mimes' => 'Documentation files must be PDF, DOC, DOCX, PPT, or PPTX.',
             'documentation_files.*.max' => 'Each documentation file must not exceed 20MB.',
             'source_files.*.mimes' => 'Source code files must be ZIP, RAR, or 7Z archives.',
             'source_files.*.max' => 'Each source code file must not exceed 20MB.',
+            'screenshots.max' => 'You can upload a maximum of 10 screenshots.',
+            'screenshots.*.image' => 'Each screenshot must be a valid image file.',
+            'screenshots.*.mimes' => 'Screenshots must be JPG, JPEG, PNG, GIF, or WEBP.',
+            'screenshots.*.max' => 'Each screenshot must not exceed 5MB.',
         ]);
 
         $project = new Project();
@@ -115,6 +128,7 @@ class ProjectController extends Controller
         $project->course_id = $request->course_id;
         $project->subject_id = $request->subject_id;
         $project->is_private = $request->has('is_private');
+        $project->allow_download = $request->has('allow_download');
         $project->created_by = auth()->id();
 
         if ($request->hasFile('image')) {
@@ -137,6 +151,11 @@ class ProjectController extends Controller
         // Handle Teams
         if ($request->teams) {
             $project->teams()->sync($request->teams);
+        }
+
+        // Handle Technologies
+        if ($request->technologies) {
+            $project->technologies()->sync($request->technologies);
         }
 
         // Handle Documentation Files
@@ -169,12 +188,30 @@ class ProjectController extends Controller
             }
         }
 
+        // Handle Screenshots
+        if ($request->hasFile('screenshots')) {
+            $descriptions = $request->input('screenshot_descriptions', []);
+            foreach ($request->file('screenshots') as $index => $file) {
+                $path = $file->store('project_files/screenshots', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'screenshot',
+                    'description' => $descriptions[$index] ?? null,
+                    'sort_order' => $index,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+        }
+
         return redirect()->route('client.projects.index')->with('success', 'Project submitted successfully!');
     }
 
     public function show($id)
     {
-        $project = Project::with(['course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files'])
+        $project = Project::with(['course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files', 'technologies', 'screenshots'])
             ->where('id', $id)
             ->firstOrFail();
 
@@ -209,8 +246,9 @@ class ProjectController extends Controller
         $universities = University::where('status', true)->get();
         $colleges = College::where('status', true)->get();
         $teams = Team::where('created_by', auth()->id())->get();
+        $technologies = Technology::orderBy('name')->get();
 
-        return view('client.projects.edit', compact('project', 'tags', 'courses', 'subjects', 'algorithms', 'universities', 'colleges', 'teams'));
+        return view('client.projects.edit', compact('project', 'tags', 'courses', 'subjects', 'algorithms', 'universities', 'colleges', 'teams', 'technologies'));
     }
 
     /**
@@ -236,15 +274,25 @@ class ProjectController extends Controller
             'algorithms.*' => 'exists:algorithms,id',
             'teams' => 'nullable|array',
             'teams.*' => 'exists:teams,id',
+            'technologies' => 'nullable|array',
+            'technologies.*' => 'exists:technologies,id',
             'documentation_files' => 'nullable|array',
             'documentation_files.*' => 'file|max:20480|mimes:pdf,doc,docx,ppt,pptx',
             'source_files' => 'nullable|array',
             'source_files.*' => 'file|max:20480|mimes:zip,rar,7z',
+            'screenshots' => 'nullable|array|max:10',
+            'screenshots.*' => 'image|max:5120|mimes:jpg,jpeg,png,gif,webp',
+            'screenshot_descriptions' => 'nullable|array',
+            'screenshot_descriptions.*' => 'nullable|string|max:500',
         ], [
             'documentation_files.*.mimes' => 'Documentation files must be PDF, DOC, DOCX, PPT, or PPTX.',
             'documentation_files.*.max' => 'Each documentation file must not exceed 20MB.',
             'source_files.*.mimes' => 'Source code files must be ZIP, RAR, or 7Z archives.',
             'source_files.*.max' => 'Each source code file must not exceed 20MB.',
+            'screenshots.max' => 'You can upload a maximum of 10 screenshots.',
+            'screenshots.*.image' => 'Each screenshot must be a valid image file.',
+            'screenshots.*.mimes' => 'Screenshots must be JPG, JPEG, PNG, GIF, or WEBP.',
+            'screenshots.*.max' => 'Each screenshot must not exceed 5MB.',
         ]);
 
         $project->name = $request->name;
@@ -254,6 +302,7 @@ class ProjectController extends Controller
         $project->course_id = $request->course_id;
         $project->subject_id = $request->subject_id;
         $project->is_private = $request->has('is_private');
+        $project->allow_download = $request->has('allow_download');
 
         if ($request->hasFile('image')) {
             if ($project->image) {
@@ -269,6 +318,7 @@ class ProjectController extends Controller
         $project->tags()->sync($request->tags ?? []);
         $project->algorithms()->sync($request->algorithms ?? []);
         $project->teams()->sync($request->teams ?? []);
+        $project->technologies()->sync($request->technologies ?? []);
 
         // Handle New Documentation Files
         if ($request->hasFile('documentation_files')) {
@@ -296,6 +346,27 @@ class ProjectController extends Controller
                     'file_path' => $path,
                     'file_type' => $file->getClientOriginalExtension(),
                     'file_category' => 'source_code',
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        // Handle New Screenshots
+        if ($request->hasFile('screenshots')) {
+            $descriptions = $request->input('screenshot_descriptions', []);
+            // Count existing screenshots to offset sort_order
+            $existingCount = $project->files()->where('file_category', 'screenshot')->count();
+            foreach ($request->file('screenshots') as $index => $file) {
+                $path = $file->store('project_files/screenshots', 'public');
+                ProjectFile::create([
+                    'project_id' => $project->id,
+                    'name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_category' => 'screenshot',
+                    'description' => $descriptions[$index] ?? null,
+                    'sort_order' => $existingCount + $index,
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ]);

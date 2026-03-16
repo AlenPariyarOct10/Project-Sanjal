@@ -32,6 +32,9 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        return view('welcome', compact('popular_projects', 'top_technologies', 'top_colleges'));
+        $total_projects = Project::count();
+        $total_innovators = \App\Models\User::count();
+
+        return view('welcome', compact('popular_projects', 'top_technologies', 'top_colleges', 'total_projects', 'total_innovators'));
     }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
 use App\Models\ProjectFile;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -74,6 +76,7 @@ class DashboardController extends Controller
     {
     //
     }
+
 
     /**
      * Remove the specified resource from storage.

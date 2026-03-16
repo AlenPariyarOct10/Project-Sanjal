@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
@@ -108,5 +108,39 @@ class User extends Authenticatable
             }
             );
         });
+    }
+
+    /**
+     * Get ranked list of top contributors.
+     */
+    public static function getTopContributors($limit = null)
+    {
+        $query = self::with(['college.university'])
+            ->withCount(['projects' => function($query) {
+                $query->where('status', true);
+            }]);
+
+        $contributors = $query->get()
+            ->map(function($user) {
+                $userProjects = Project::where('created_by', $user->id)->get();
+                $user->total_likes = $userProjects->sum(function($p) { return $p->likes()->count(); });
+                $user->total_views = $userProjects->sum('views');
+                $user->total_downloads = $userProjects->sum('downloads');
+                
+                $user->rank_score = ($user->projects_count * 10) + ($user->total_likes * 2) + (int)($user->total_views / 10) + ($user->total_downloads * 5);
+                
+                return $user;
+            })
+            ->filter(function($user) {
+                return $user->projects_count > 0;
+            })
+            ->sortByDesc('rank_score')
+            ->values();
+
+        if ($limit) {
+            return $contributors->take($limit);
+        }
+
+        return $contributors;
     }
 }

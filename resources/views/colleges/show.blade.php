@@ -28,6 +28,8 @@
             <ul class="hidden md:flex gap-6 list-none items-center" id="navLinks">
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
+                <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Colleges</a></li>
+                <li><a href="{{ route('users.contributors') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Contributors</a></li>
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
                     <li><a href="{{ route('client.projects.create') }}" class="bg-black text-white font-semibold px-4 py-2 rounded">Submit Project</a></li>
@@ -36,7 +38,28 @@
                     <li><a href="{{ route('client.register') }}" class="bg-black text-white font-semibold px-4 py-2 rounded">Get Started</a></li>
                 @endif
             </ul>
+            <button class="md:hidden flex flex-col gap-1 cursor-pointer bg-none border-none" id="navToggle" onclick="document.getElementById('mobileNav').classList.toggle('hidden')">
+                <span class="w-6 h-0.5 bg-gray-900"></span>
+                <span class="w-6 h-0.5 bg-gray-900"></span>
+                <span class="w-6 h-0.5 bg-gray-900"></span>
+            </button>
         </nav>
+    </div>
+    <!-- Mobile Nav -->
+    <div id="mobileNav" class="hidden md:hidden bg-white border-t border-gray-100 p-4">
+        <ul class="flex flex-col gap-4 list-none">
+            <li><a href="/" class="text-gray-600 font-medium text-sm">Home</a></li>
+            <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm">Browse Projects</a></li>
+            <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm">Colleges</a></li>
+            <li><a href="{{ route('users.contributors') }}" class="text-gray-600 font-medium text-sm">Contributors</a></li>
+            @if(auth()->check())
+                <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm">Dashboard</a></li>
+                <li><a href="{{ route('client.projects.create') }}" class="bg-black text-white font-semibold px-4 py-2 inline-block">Submit Project</a></li>
+            @else
+                <li><a href="{{ route('client.login') }}" class="text-gray-600 font-medium text-sm">Login</a></li>
+                <li><a href="{{ route('client.register') }}" class="bg-black text-white font-semibold px-4 py-2 inline-block text-center">Get Started</a></li>
+            @endif
+        </ul>
     </div>
 </header>
 

@@ -11,7 +11,7 @@ class Project extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'github_url', 'live_url', 'image',
-        'status', 'created_by', 'course_id', 'subject_id', 'views', 'downloads'
+        'status', 'created_by', 'course_id', 'subject_id', 'views', 'downloads', 'allow_download'
     ];
 
     // ---- Relationships ----
@@ -55,6 +55,18 @@ class Project extends Model
     public function files()
     {
         return $this->hasMany(ProjectFile::class , 'project_id');
+    }
+
+    public function screenshots()
+    {
+        return $this->hasMany(ProjectFile::class, 'project_id')
+            ->where('file_category', 'screenshot')
+            ->orderBy('sort_order');
+    }
+
+    public function technologies()
+    {
+        return $this->belongsToMany(Technology::class);
     }
 
     public function comments()

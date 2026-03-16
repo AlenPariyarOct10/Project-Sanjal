@@ -26,6 +26,7 @@
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
                 <li><a href="{{ route('colleges.index') }}" class="text-black font-semibold text-sm underline">Colleges</a></li>
+                <li><a href="{{ route('users.contributors') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Contributors</a></li>
 
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>

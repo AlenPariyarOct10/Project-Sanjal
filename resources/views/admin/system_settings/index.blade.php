@@ -114,6 +114,19 @@
                                         placeholder="e.g. Share &amp; Collaborate IT Projects">{{ $settings['system_short_description'] ?? '' }}</textarea>
                                     <p class="text-xs text-gray-500 mt-1">Shown in login pages and as a subtitle for the system.</p>
                                 </div>
+
+                                <div class="mt-4 p-4 border rounded-lg bg-gray-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-md font-bold text-red-600">Maintenance Mode</h3>
+                                            <p class="text-xs text-gray-500 mt-1">When enabled, the site will only be visible to administrators.</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="maintenance_mode" value="1" class="sr-only peer" {{ ($settings['maintenance_mode'] ?? '0') == '1' ? 'checked' : '' }}>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mt-6 flex items-center gap-4 border-t pt-4">

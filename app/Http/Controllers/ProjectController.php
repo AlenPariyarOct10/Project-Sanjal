@@ -20,9 +20,15 @@ class ProjectController extends Controller
             });
         }
 
+        if ($request->filled('university')) {
+            $query->whereHas('course', function ($q) use ($request) {
+                $q->where('university_id', $request->university);
+            });
+        }
+
         if ($request->filled('tag')) {
             $query->whereHas('tags', function ($q) use ($request) {
-                $q->where('tags.id', $request->tag);
+                $q->whereIn('tags.id', (array)$request->tag);
             });
         }
 
@@ -36,7 +42,13 @@ class ProjectController extends Controller
 
         if ($request->filled('algorithm')) {
             $query->whereHas('algorithms', function ($q) use ($request) {
-                $q->where('algorithms.id', $request->algorithm);
+                $q->whereIn('algorithms.id', (array)$request->algorithm);
+            });
+        }
+
+        if ($request->filled('technology')) {
+            $query->whereHas('technologies', function ($q) use ($request) {
+                $q->whereIn('technologies.id', (array)$request->technology);
             });
         }
 
@@ -56,18 +68,20 @@ class ProjectController extends Controller
         $projects = $query->paginate(12)->withQueryString();
 
         $tags = \App\Models\Tag::where('status', true)->get();
+        $universities = \App\Models\University::where('status', true)->get();
         $courses = \App\Models\Course::where('status', true)->get();
         $subjects = \App\Models\Subject::get();
         $algorithms = \App\Models\Algorithm::where('status', true)->get();
         $colleges = \App\Models\College::where('status', true)->get();
+        $technologies = \App\Models\Technology::orderBy('name')->get();
 
-        return view('projects.index', compact('projects', 'tags', 'courses', 'subjects', 'algorithms', 'colleges'));
+        return view('projects.index', compact('projects', 'tags', 'universities', 'courses', 'subjects', 'algorithms', 'colleges', 'technologies'));
     }
 
     public function show($slug)
     {
         $project = Project::with([
-            'course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files',
+            'course', 'subject', 'algorithms', 'user.college', 'teams', 'tags', 'files', 'screenshots',
             'comments' => function ($q) {
             $q->whereNull('parent_id')->with(['user', 'replies.user'])->latest();
         }
@@ -95,12 +109,29 @@ class ProjectController extends Controller
 
     public function download($slug)
     {
+        $user = auth()->guard('client')->user() ?? auth()->user();
+
+        if (!$user) {
+            return redirect()->route('client.login')->with('error', 'You must be logged in to download files.');
+        }
+
         $project = Project::where('slug', $slug)->firstOrFail();
+
+        if (!$project->allow_download) {
+            return redirect()->back()->with('error', 'Downloads are not allowed for this project.');
+        }
+
         $files = $project->files()->where('status', true)->get();
 
         if ($files->isEmpty()) {
             return redirect()->back()->with('error', 'No file found for this project.');
         }
+
+        // Record the download if not already recorded for this user
+        \App\Models\ProjectDownload::firstOrCreate([
+            'project_id' => $project->id,
+            'user_id' => $user->id,
+        ]);
 
         // --- Single file: stream it directly ---
         if ($files->count() === 1) {

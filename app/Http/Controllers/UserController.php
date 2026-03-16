@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     /**
+     * Display ranked list of top contributors.
+     */
+    public function index()
+    {
+        $contributors = User::getTopContributors();
+        return view('users.contributors', compact('contributors'));
+    }
+
+    /**
      * Display the specified user profile.
      */
     public function show($id)

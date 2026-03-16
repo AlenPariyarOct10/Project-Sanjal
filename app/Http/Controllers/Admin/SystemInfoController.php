@@ -237,6 +237,15 @@ class SystemInfoController extends Controller
                 }
             }
 
+            // Save boolean flags
+            $flags = ['maintenance_mode'];
+            foreach ($flags as $field) {
+                SystemInfo::updateOrCreate(
+                    ['key' => $field],
+                    ['value' => $request->has($field) ? '1' : '0', 'status' => 1]
+                );
+            }
+
             DB::commit();
             return redirect()->route('admin.system_settings.index')->with('success', 'System settings saved successfully!');
         }

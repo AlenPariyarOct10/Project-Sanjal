@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProjectSanjal - Share & Collaborate IT Projects</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @if($system_logo)
+        <link rel="icon" type="image/x-icon" href="{{ $system_logo }}">
+    @endif
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap');
 
@@ -145,6 +149,7 @@
                 <li><a href="#home" class="text-slate-600 font-semibold text-sm hover:text-indigo-600 transition-colors">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-slate-600 font-semibold text-sm hover:text-indigo-600 transition-colors">Browse</a></li>
                 <li><a href="{{ route('colleges.index') }}" class="text-slate-600 font-semibold text-sm hover:text-indigo-600 transition-colors">Colleges</a></li>
+                <li><a href="{{ route('users.contributors') }}" class="text-slate-600 font-semibold text-sm hover:text-indigo-600 transition-colors">Contributors</a></li>
 
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-slate-600 font-semibold text-sm hover:text-indigo-600 transition-colors">Dashboard</a></li>
@@ -166,6 +171,7 @@
         <a href="#home" class="block text-slate-600 font-semibold">Home</a>
         <a href="{{ route('projects.index') }}" class="block text-slate-600 font-semibold">Browse</a>
         <a href="{{ route('colleges.index') }}" class="block text-slate-600 font-semibold">Colleges</a>
+        <a href="{{ route('users.contributors') }}" class="block text-slate-600 font-semibold">Contributors</a>
         <hr class="border-slate-100">
         @if(auth()->check())
             <a href="{{ route('client.dashboard') }}" class="block text-slate-600 font-semibold">Dashboard</a>
@@ -182,14 +188,14 @@
     <div class="max-w-7xl mx-auto">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="relative z-10">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold mb-8">
-                    <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-100 text-green-700 text-xs font-bold mb-8">
+                    <span class="flex h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
                     NEPAL'S LARGEST IT HUB
                 </div>
 
                 <h1 class="text-6xl md:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
-                    The Platform to<br>
-                    <span class="gradient-text">Showcase IT Projects</span>
+                    Showcase Your<br>
+                    <span class="gradient-text">IT Projects</span>
                 </h1>
 
                 <p class="text-slate-600 text-xl mb-10 leading-relaxed max-w-xl">
@@ -206,14 +212,14 @@
                 </div>
 
                 <!-- Stats -->
-                <div class="flex gap-12 mt-16 pt-10 border-t border-slate-100">
-                    <div>
-                        <p class="text-4xl font-black text-slate-900">500+</p>
-                        <p class="text-slate-500 font-medium">Projects</p>
+                <div class="flex gap-10 mt-8 pt-6 border-t border-slate-100 text-left">
+                    <div class="pe-6 border-r border-slate-100">
+                        <p class="text-3xl font-black text-slate-900">{{ number_format($total_projects) }}+</p>
+                        <p class="text-slate-500 text-sm font-semibold tracking-wide uppercase mt-1">Projects</p>
                     </div>
                     <div>
-                        <p class="text-4xl font-black text-indigo-600">2K+</p>
-                        <p class="text-slate-500 font-medium">Innovators</p>
+                        <p class="text-3xl font-black text-indigo-600">{{ number_format($total_innovators) }}+</p>
+                        <p class="text-slate-500 text-sm font-semibold tracking-wide uppercase mt-1">Innovators</p>
                     </div>
                 </div>
             </div>
@@ -223,17 +229,17 @@
                 <div class="relative h-[600px]">
                     <!-- Top Left: Coding -->
                     <div class="absolute top-0 left-0 hero-img-box float-animation border-indigo-100" style="animation-duration: 5s; width: 270px; height: 270px;">
-                        <img src="{{ asset('images/hero/cs3.jpg') }}" alt="Coding">
+                        <img src="{{ asset('images/hero/cs2.png') }}" alt="Coding">
                     </div>
 
                     <!-- Top Right: Design -->
                     <div class="absolute top-20 right-10 hero-img-box float-animation" style="animation-delay: 1s; animation-duration: 6s; width: 270px; height: 270px;">
-                        <img src="{{ asset('images/hero/cs2.jpg') }}" alt="Design">
+                        <img src="{{ asset('images/hero/cs4.jpg') }}" alt="Design">
                     </div>
 
                     <!-- Bottom Right: Rocket/Success -->
                     <div class="absolute bottom-10 right-0 hero-img-box float-animation" style="animation-delay: 2s; animation-duration: 4s; width: 270px; height: 270px;">
-                        <img src="{{ asset('images/hero/cs4.jpg') }}" alt="Innovation">
+                        <img src="{{ asset('images/hero/cs3.png') }}" alt="Innovation">
                     </div>
 
                     <!-- Left Center: Speed -->
@@ -263,37 +269,37 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($popular_projects as $project)
-                <div class="card-premium rounded-[2rem] overflow-hidden group">
+                <div class="card-premium rounded-2xl overflow-hidden group">
                     <a href="{{ route('projects.show', $project->slug) }}" class="block">
-                        <div class="aspect-[4/3] overflow-hidden bg-slate-100">
+                        <div class="aspect-video overflow-hidden bg-slate-100">
                             @if($project->image)
                                 <img src="{{ asset('storage/' . $project->image) }}" alt="{{ $project->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-indigo-50">
-                                    <svg class="w-16 h-16 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 </div>
                             @endif
                         </div>
-                        <div class="p-8">
-                            <h3 class="text-2xl font-bold text-slate-900 mb-4 line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $project->name }}</h3>
-                            <p class="text-slate-600 text-sm mb-6 line-clamp-2 leading-relaxed">{{ $project->description }}</p>
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $project->name }}</h3>
+                            <p class="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">{{ $project->description }}</p>
 
-                            <div class="flex flex-wrap gap-2 mb-8">
+                            <div class="flex flex-wrap gap-2 mb-4">
                                 @foreach($project->tags->take(2) as $tag)
-                                    <span class="text-[10px] uppercase tracking-widest font-extrabold px-3 py-1.5 rounded-lg bg-slate-50 text-slate-500 border border-slate-100">{{ $tag->name }}</span>
+                                    <span class="text-[10px] uppercase tracking-widest font-extrabold px-2 py-1 rounded-lg bg-slate-50 text-slate-500 border border-slate-100">{{ $tag->name }}</span>
                                 @endforeach
                             </div>
 
-                            <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                            <div class="flex items-center justify-between pt-4 border-t border-slate-50">
                                 <div class="flex items-center gap-2">
-                                    <div class="p-2 rounded-lg bg-pink-50 text-pink-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>
+                                    <div class="p-1.5 rounded-lg bg-pink-50 text-pink-600">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>
                                     </div>
-                                    <span class="font-bold text-slate-900">{{ $project->likes_count }}</span>
+                                    <span class="font-bold text-sm text-slate-900">{{ $project->likes_count }}</span>
                                 </div>
-                                <span class="text-indigo-600 font-bold text-sm">View Project &rarr;</span>
+                                <span class="text-indigo-600 font-bold text-xs">View Project &rarr;</span>
                             </div>
                         </div>
                     </a>

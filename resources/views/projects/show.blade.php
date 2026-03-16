@@ -26,7 +26,8 @@
                 <li><a href="/" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Home</a></li>
                 <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Browse Projects</a></li>
                 <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Colleges</a></li>
-                
+                <li><a href="{{ route('users.contributors') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Contributors</a></li>
+
                 @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                     <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">Dashboard</a></li>
                     <li><a href="{{ route('client.projects.index') }}" class="text-gray-600 font-medium text-sm hover:text-black hover:underline">My Projects</a></li>
@@ -55,6 +56,7 @@
             <li><a href="/" class="text-gray-600 font-medium text-sm">Home</a></li>
             <li><a href="{{ route('projects.index') }}" class="text-gray-600 font-medium text-sm">Browse Projects</a></li>
             <li><a href="{{ route('colleges.index') }}" class="text-gray-600 font-medium text-sm">Colleges</a></li>
+            <li><a href="{{ route('users.contributors') }}" class="text-gray-600 font-medium text-sm">Contributors</a></li>
             @if(auth()->check())
                 <li><a href="{{ route('client.dashboard') }}" class="text-gray-600 font-medium text-sm">Dashboard</a></li>
                 <li><a href="{{ route('client.projects.create') }}" class="bg-black text-white font-semibold px-4 py-2 inline-block">Submit Project</a></li>
@@ -66,19 +68,19 @@
     </div>
 </header>
 
-<main class="py-12 md:py-20">
+<main class="py-8 md:py-15">
     <div class="max-w-6xl mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <!-- Left Column: Content -->
             <div class="lg:col-span-2">
                 <div class="mb-8">
                     <h1 class="text-4xl md:text-5xl font-extrabold mb-4">{{ $project->name }}</h1>
-                    
+
                     @php
                         $user = auth()->guard('client')->user() ?? auth()->user();
                         $isLiked = $user ? $project->likes()->where('user_id', $user->id)->exists() : false;
                     @endphp
-                    
+
                     <div class="flex items-center gap-4 mb-6">
                         <form id="like-form" action="{{ route('projects.like', $project->id) }}" method="POST">
                             @csrf
@@ -99,6 +101,9 @@
                     </div>
 
                     <div class="flex flex-wrap gap-2 mb-6">
+                        @foreach($project->technologies as $tech)
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-widest border border-indigo-200">{{ $tech->name }}</span>
+                        @endforeach
                         @foreach($project->tags as $tag)
                             <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-widest border border-gray-200">{{ $tag->name }}</span>
                         @endforeach
@@ -117,9 +122,39 @@
 
                 <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12">
                     <h2 class="text-2xl font-bold text-black mb-4">Project Description</h2>
-                    <p>{{ $project->description }}</p>
+                    <p>{!! nl2br(e($project->description)) !!}</p>
                 </div>
-                
+
+                @if($project->screenshots->count() > 0)
+                <div class="mb-12">
+                    <h2 class="text-2xl font-bold text-black mb-6">Project Gallery</h2>
+                    <div class="space-y-8">
+                        @foreach($project->screenshots as $screenshot)
+                            <div class="group relative bg-gray-50 border border-gray-100 p-2 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                                <div class="aspect-video w-full rounded-lg overflow-hidden bg-gray-200">
+                                    <img src="{{ asset('storage/' . $screenshot->file_path) }}" 
+                                         alt="{{ $screenshot->description ?: $project->name }}" 
+                                         class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500">
+                                </div>
+                                @if($screenshot->description)
+                                    <div class="p-4">
+                                        <p class="text-gray-600 text-sm italic leading-relaxed">
+                                            <span class="text-indigo-600 font-bold not-italic mr-1">#</span> 
+                                            {{ $screenshot->description }}
+                                        </p>
+                                    </div>
+                                @endif
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <a href="{{ asset('storage/' . $screenshot->file_path) }}" target="_blank" class="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg text-gray-900 hover:text-indigo-600 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 @if($project->course || $project->subject || $project->algorithms->count() > 0)
                 <div class="mb-12">
                     <h2 class="text-2xl font-bold text-black mb-6">Academic Context</h2>
@@ -157,7 +192,7 @@
                     @endif
                 </div>
                 @endif
-                
+
                 <!-- Comments Section -->
                 <div class="mt-12 pt-8 border-t border-gray-200">
                     <h2 class="text-2xl font-bold text-black mb-6">Comments & Discussion</h2>
@@ -196,12 +231,12 @@
                                         <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
                                     </div>
                                     <p class="text-gray-700 text-sm mb-3 whitespace-pre-line">{{ $comment->text }}</p>
-                                    
+
                                     <div class="flex items-center gap-4 text-xs font-bold text-gray-500">
                                         @if(auth()->guard('client')->check() || auth()->guard('web')->check())
                                             <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="hover:text-black transition-colors focus:outline-none">Reply</button>
                                         @endif
-                                        
+
                                         @if((auth()->guard('client')->id() == $comment->user_id) || auth()->guard('web')->check())
                                             <button type="button" onclick="toggleEditForm({{ $comment->id }})" class="hover:text-black transition-colors focus:outline-none">Edit</button>
                                             <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this comment?');">
@@ -248,7 +283,7 @@
                                                             <span class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</span>
                                                         </div>
                                                         <p class="text-gray-700 text-sm mb-2 whitespace-pre-line">{{ $reply->text }}</p>
-                                                        
+
                                                         <div class="flex items-center gap-4 text-xs font-bold text-gray-500">
                                                             @if((auth()->guard('client')->id() == $reply->user_id) || auth()->guard('web')->check())
                                                                 <button type="button" onclick="toggleEditForm({{ $reply->id }})" class="hover:text-black transition-colors focus:outline-none">Edit</button>
@@ -332,12 +367,24 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('projects.download', $project->slug) }}" class="flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 hover:bg-indigo-700 transition-colors w-full rounded">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                        {{ $totalFiles > 1 ? 'Download All as ZIP' : 'Download File' }}
-                                    </a>
-                                    @if($totalFiles > 1)
-                                        <p class="text-xs text-indigo-500 text-center mt-2">All {{ $totalFiles }} files packaged in one ZIP</p>
+                                    @if(!$project->allow_download)
+                                        <button disabled class="flex items-center justify-center gap-2 bg-gray-300 text-gray-500 font-bold py-3 px-6 w-full rounded cursor-not-allowed">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            Downloads Disabled
+                                        </button>
+                                    @elseif(auth()->guard('client')->check() || auth()->guard('web')->check())
+                                        <a href="{{ route('projects.download', $project->slug) }}" class="flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 hover:bg-indigo-700 transition-colors w-full rounded shadow hover:shadow-md">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                            {{ $totalFiles > 1 ? 'Download All as ZIP' : 'Download File' }}
+                                        </a>
+                                        @if($totalFiles > 1)
+                                            <p class="text-xs text-indigo-500 text-center mt-2">All {{ $totalFiles }} files packaged in one ZIP</p>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('client.login') }}" class="flex items-center justify-center gap-2 bg-gray-800 text-white font-bold py-3 px-6 hover:bg-black transition-colors w-full rounded shadow">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                                            Log in to Download
+                                        </a>
                                     @endif
                                 </div>
                             @endif
@@ -355,7 +402,7 @@
                                     <span class="font-bold">Anonymous</span>
                                 @endif
                             </div>
-                            
+
                             @if($project->teams->count() > 0)
                                 <div class="flex flex-col gap-2 border-t pt-4 border-gray-200">
                                     <span class="text-gray-500 font-bold uppercase text-xs tracking-widest">Team(s)</span>

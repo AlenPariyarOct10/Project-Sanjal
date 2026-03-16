@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('admin*') ? route('admin.login') : ($request->is('client*') ? route('client.login') : route('login')));
+        $middleware->append(\App\Http\Middleware\CheckMaintenanceMode::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

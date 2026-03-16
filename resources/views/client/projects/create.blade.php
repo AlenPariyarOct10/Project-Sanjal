@@ -42,14 +42,48 @@
                             </div>
                         </div>
 
-                        <!-- Tags -->
-                        <div>
-                            <x-input-label for="tags" :value="__('Technologies / Tags')" />
-                            <select id="tags" name="tags[]" multiple class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm min-h-[100px]">
-                                @foreach($tags as $tag)
-                                    <option value="{{ $tag->id }}" {{ (is_array(old('tags')) && in_array($tag->id, old('tags'))) ? 'selected' : '' }}>{{ $tag->name }}</option>
+                        <!-- Tech Stack -->
+                        <div class="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+                            <x-input-label :value="__('Tech Stack / Technologies Used')" class="mb-2" />
+                            <div class="relative mb-3">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="techSearch" placeholder="Search technologies..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out">
+                            </div>
+                            <div id="techList" class="max-h-48 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2 p-2 border border-gray-100 rounded bg-gray-50">
+                                @foreach($technologies as $tech)
+                                    <label class="tech-item flex items-center space-x-2 text-sm text-gray-700 cursor-pointer p-1 hover:bg-gray-200 rounded transition">
+                                        <input type="checkbox" name="technologies[]" value="{{ $tech->id }}" {{ (is_array(old('technologies')) && in_array($tech->id, old('technologies'))) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <span class="tech-name">{{ $tech->name }}</span>
+                                    </label>
                                 @endforeach
-                            </select>
+                            </div>
+                            <x-input-error :messages="$errors->get('technologies')" class="mt-2" />
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+                            <x-input-label :value="__('Tags')" class="mb-2" />
+                            <div class="relative mb-3">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="tagSearch" placeholder="Search tags..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out">
+                            </div>
+                            <div class="max-h-48 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2 p-2 border border-gray-100 rounded bg-gray-50">
+                                @foreach($tags as $tag)
+                                    <label class="tag-item flex items-center space-x-2 text-sm text-gray-700 cursor-pointer p-1 hover:bg-gray-200 rounded transition">
+                                        <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ (is_array(old('tags')) && in_array($tag->id, old('tags'))) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <span class="tag-name">{{ $tag->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <x-input-error :messages="$errors->get('tags')" class="mt-2" />
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,13 +111,25 @@
                         </div>
 
                         <!-- Algorithms -->
-                        <div>
-                            <x-input-label for="algorithms" :value="__('Related Algorithms')" />
-                            <select id="algorithms" name="algorithms[]" multiple class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm min-h-[100px]">
+                        <div class="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+                            <x-input-label :value="__('Related Algorithms')" class="mb-2" />
+                            <div class="relative mb-3">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="algoSearch" placeholder="Search algorithms..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out">
+                            </div>
+                            <div class="max-h-48 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2 p-2 border border-gray-100 rounded bg-gray-50">
                                 @foreach($algorithms as $algo)
-                                    <option value="{{ $algo->id }}" {{ (is_array(old('algorithms')) && in_array($algo->id, old('algorithms'))) ? 'selected' : '' }}>{{ $algo->name }}</option>
+                                    <label class="algo-item flex items-center space-x-2 text-sm text-gray-700 cursor-pointer p-1 hover:bg-gray-200 rounded transition">
+                                        <input type="checkbox" name="algorithms[]" value="{{ $algo->id }}" {{ (is_array(old('algorithms')) && in_array($algo->id, old('algorithms'))) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <span class="algo-name">{{ $algo->name }}</span>
+                                    </label>
                                 @endforeach
-                            </select>
+                            </div>
+                            <x-input-error :messages="$errors->get('algorithms')" class="mt-2" />
                         </div>
 
                         <!-- Teams -->
@@ -125,6 +171,34 @@
                             <x-input-error :messages="$errors->get('documentation_files.*')" class="mt-1" />
                         </div>
 
+                        <!-- Project Screenshots -->
+                        <div class="border border-gray-200 rounded-lg p-5 bg-gray-50">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <x-input-label for="screenshots" :value="__('Project Screenshots')" class="!mb-0 font-semibold" />
+                                    <p class="text-xs text-gray-500">Max 10 images &mdash; JPG, PNG, WEBP &mdash; max 5MB each &mdash; <span class="font-medium text-gray-600">Optional</span></p>
+                                </div>
+                            </div>
+                            
+                            <div id="screenshot-container" class="space-y-4">
+                                <label for="screenshots" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-green-300 rounded-lg cursor-pointer bg-white hover:bg-green-50 transition-colors">
+                                    <svg class="w-8 h-8 text-green-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    <span class="text-sm text-green-600 font-semibold">Add Screenshots</span>
+                                    <span class="text-xs text-gray-400">Select up to 10 images</span>
+                                    <input id="screenshots" type="file" name="screenshots[]" multiple accept="image/*" class="hidden" onchange="previewScreenshots(this)" />
+                                </label>
+                                
+                                <div id="screenshot-previews" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Previews will be injected here -->
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('screenshots')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('screenshots.*')" class="mt-2" />
+                        </div>
+
                         <!-- Source Code Files -->
                         <div class="border border-gray-200 rounded-lg p-5 bg-gray-50">
                             <div class="flex items-center gap-3 mb-3">
@@ -147,10 +221,18 @@
                             <x-input-error :messages="$errors->get('source_files.*')" class="mt-1" />
                         </div>
 
-                        <!-- Private Toggle -->
-                        <div class="flex items-center">
-                            <input id="is_private" type="checkbox" name="is_private" value="1" {{ old('is_private') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                            <label for="is_private" class="ml-2 text-sm text-gray-600">Keep this project private</label>
+                        <div class="space-y-3">
+                            <!-- Private Toggle -->
+                            <div class="flex items-center">
+                                <input id="is_private" type="checkbox" name="is_private" value="1" {{ old('is_private') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                <label for="is_private" class="ml-2 text-sm text-gray-600">Keep this project private</label>
+                            </div>
+
+                            <!-- Allow Download Toggle -->
+                            <div class="flex items-center">
+                                <input id="allow_download" type="checkbox" name="allow_download" value="1" {{ old('allow_download', true) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                <label for="allow_download" class="ml-2 text-sm text-gray-600">Allow users to download project files</label>
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
@@ -165,6 +247,20 @@
         </div>
     </div>
     <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo'],
+            })
+            .then(editor => {
+                const textarea = document.querySelector('#description');
+                editor.model.document.on('change:data', () => {
+                    textarea.value = editor.getData();
+                });
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
         document.getElementById('course_id').addEventListener('change', function() {
             const courseId = this.value;
             const subjectSelect = document.getElementById('subject_id');
@@ -206,5 +302,58 @@
                 list.appendChild(li);
             });
         }
+
+        function previewScreenshots(input) {
+            const previewContainer = document.getElementById('screenshot-previews');
+            previewContainer.innerHTML = '';
+            
+            if (input.files.length > 10) {
+                alert('You can only upload up to 10 screenshots.');
+                input.value = '';
+                return;
+            }
+
+            Array.from(input.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white p-3 border border-gray-200 rounded-lg shadow-sm';
+                    div.innerHTML = `
+                        <div class="aspect-video w-full bg-gray-100 rounded mb-3 overflow-hidden">
+                            <img src="${e.target.result}" class="w-full h-full object-cover">
+                        </div>
+                        <input type="text" name="screenshot_descriptions[]" placeholder="Brief description (optional)" 
+                               class="block w-full text-xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <p class="text-[10px] text-gray-400 mt-1 truncate">${file.name}</p>
+                    `;
+                    previewContainer.appendChild(div);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // General Search functionality for checkbox lists
+        function setupSearch(searchInputId, itemClass, nameClass) {
+            const searchInput = document.getElementById(searchInputId);
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const items = document.querySelectorAll('.' + itemClass);
+                    
+                    items.forEach(item => {
+                        const text = item.querySelector('.' + nameClass).textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+        
+        setupSearch('techSearch', 'tech-item', 'tech-name');
+        setupSearch('tagSearch', 'tag-item', 'tag-name');
+        setupSearch('algoSearch', 'algo-item', 'algo-name');
     </script>
 </x-app-layout>

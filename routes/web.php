@@ -14,6 +14,7 @@ Route::get('/projects', [ProjectController::class , 'index'])->name('projects.in
 Route::get('/projects/{slug}', [ProjectController::class , 'show'])->name('projects.show');
 Route::get('/projects/{slug}/download', [ProjectController::class , 'download'])->name('projects.download');
 Route::post('/projects/{project}/like', [ProjectController::class , 'toggleLike'])->name('projects.like');
+Route::get('/contributors', [\App\Http\Controllers\UserController::class , 'index'])->name('users.contributors');
 Route::get('/users/{user}', [\App\Http\Controllers\UserController::class , 'show'])->name('users.show');
 Route::get('/colleges', [\App\Http\Controllers\CollegeController::class , 'index'])->name('colleges.index');
 Route::get('/colleges/{college}', [\App\Http\Controllers\CollegeController::class , 'show'])->name('colleges.show');
